@@ -369,13 +369,11 @@ public class MainActivity extends AppCompatActivity
             return sb.toString();
         }
 
-        //
         @Override
         protected void onPreExecute() {
             //mOutputText.setText("");
             mProgress.show();
         }
-        //*/
 
         @Override
         protected void onPostExecute(List<String> output) {
