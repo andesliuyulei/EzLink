@@ -322,8 +322,7 @@ public class MainActivity extends AppCompatActivity
                 throw new IOException(getScriptError(op));
             }
 
-            if (op.getResponse() != null &&
-                    op.getResponse().get("result") != null) {
+            if (op.getResponse() != null && op.getResponse().get("result") != null) {
                 return (List<String>) op.getResponse().get("result");
             } else {
                 return null;
