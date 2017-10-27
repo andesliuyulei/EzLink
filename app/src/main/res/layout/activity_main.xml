@@ -6,148 +6,155 @@
     android:layout_height="match_parent"
     tools:context="com.keysight.yuleil01.ezlink.MainActivity">
 
-    <Spinner
-        android:id="@+id/spinnerEZLinkCardNumber"
+    <ScrollView
         android:layout_width="0dp"
-        android:layout_height="41dp"
-        android:layout_marginBottom="390dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:tooltipText="EZLink Card Number"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/buttonSubmit"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <RadioGroup
-        android:id="@+id/selectMRTorBUS"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:checkedButton="@+id/radioButtonMRT"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerEZLinkCardNumber">
-
-        <RadioButton
-            android:id="@+id/radioButtonMRT"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="MRT" />
+            android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/radioButtonBUS"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="BUS" />
-    </RadioGroup>
+            <Spinner
+                android:id="@+id/spinnerEZLinkCardNumber"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:tooltipText="EZLink Card Number"
+                android:visibility="visible"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editMRT1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="MRT Station (From)"
-        android:inputType="textPersonName"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectMRTorBUS" />
+            <RadioGroup
+                android:id="@+id/selectMRTorBUS"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:checkedButton="@+id/radioButtonMRT"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinnerEZLinkCardNumber">
 
-    <EditText
-        android:id="@+id/editMRT2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="MRT Station (To)"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editMRT1"
-        app:layout_constraintVertical_bias="0.032" />
+                <RadioButton
+                    android:id="@+id/radioButtonMRT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/radio_mrt" />
 
-    <EditText
-        android:id="@+id/editBusNumber"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="Bus Number"
-        android:inputType="textPersonName"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectMRTorBUS"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+                <RadioButton
+                    android:id="@+id/radioButtonBUS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/radio_bus" />
+            </RadioGroup>
 
-    <EditText
-        android:id="@+id/editBusStop1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:ems="10"
-        android:hint="Bus Stop (From)"
-        android:inputType="textPersonName"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/editBusNumber"
-        app:layout_constraintVertical_bias="0.036"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+            <EditText
+                android:id="@+id/editMRT1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:hint="@string/hint_mrt_station_1"
+                android:inputType="textPersonName"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/selectMRTorBUS" />
 
-    <EditText
-        android:id="@+id/editBusStop2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="Bus Stop (To)"
-        android:inputType="textPersonName"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editBusStop1"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+            <EditText
+                android:id="@+id/editMRT2"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:hint="@string/hint_mrt_station_2"
+                android:inputType="textPersonName"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editMRT1" />
 
-    <Button
-        android:id="@+id/buttonSubmit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:onClick="submitTransaction"
-        android:text="Submit Transaction"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+            <EditText
+                android:id="@+id/editBusNumber"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:hint="@string/hint_bus_number"
+                android:inputType="textPersonName"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/selectMRTorBUS" />
+
+            <EditText
+                android:id="@+id/editBusStop1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:hint="@string/hint_bus_stop_1"
+                android:inputType="textPersonName"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editBusNumber" />
+
+            <EditText
+                android:id="@+id/editBusStop2"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:hint="@string/hint_bus_stop_2"
+                android:inputType="textPersonName"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editBusStop1" />
+
+            <Button
+                android:id="@+id/buttonSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:enabled="true"
+                android:onClick="submitTransaction"
+                android:text="@string/button_submit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
