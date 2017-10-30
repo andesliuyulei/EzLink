@@ -48,7 +48,6 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks {
     static GoogleAccountCredential mCredential;
-    //private TextView mOutputText;
     ProgressDialog mProgress;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
