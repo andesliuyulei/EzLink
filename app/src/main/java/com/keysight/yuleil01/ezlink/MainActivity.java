@@ -135,9 +135,9 @@ public class MainActivity extends AppCompatActivity
 
     /** Called when the user taps the Submit Transaction button */
     public void submitTransaction(View view) {
-        //findViewById(R.id.buttonSubmit).setEnabled(Boolean.FALSE);
+        findViewById(R.id.buttonSubmit).setEnabled(Boolean.FALSE);
         getResultsFromApi();
-        //findViewById(R.id.buttonSubmit).setEnabled(Boolean.TRUE);
+        findViewById(R.id.buttonSubmit).setEnabled(Boolean.TRUE);
     }
 
     private void displayResult(List<String> output) {
