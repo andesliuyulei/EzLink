@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // Initialize credentials and service object.
+        // Initialize credentials and service object..
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
