@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ezlinkCardNumber = (AutoCompleteTextView) findViewById(R.id.editEZLinkCardNumber);
         mrtRadio = (RadioButton) findViewById(R.id.radioButtonMRT);
         mrtFrom = (AutoCompleteTextView) findViewById(R.id.editMRT1);
         mrtTo = (AutoCompleteTextView) findViewById(R.id.editMRT2);
@@ -411,7 +412,6 @@ public class MainActivity extends AppCompatActivity
                         progressDialog.hide();
                     }
                     listOfCardNumbers = output.toArray(new String[0]);
-                    ezlinkCardNumber = (AutoCompleteTextView) findViewById(R.id.editEZLinkCardNumber);
                     ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfCardNumbers));
                     break;
                 case "GetRailStationList":
@@ -420,8 +420,8 @@ public class MainActivity extends AppCompatActivity
                     }
                     listOfRailStations = output.toArray(new String[0]);
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfRailStations);
-                    ((AutoCompleteTextView) findViewById(R.id.editMRT1)).setAdapter(adapter);
-                    ((AutoCompleteTextView) findViewById(R.id.editMRT2)).setAdapter(adapter);
+                    mrtFrom.setAdapter(adapter);
+                    mrtTo.setAdapter(adapter);
                     break;
                 case "DataInitComplete":
                     progressDialog.hide();
