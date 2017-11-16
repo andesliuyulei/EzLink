@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case "DataInitComplete":
                     functionParameters.add(ezlinkCardNumber.getText().toString());
-                    if (transportationType.equals("MRT")) {
+                    if (mrtRadio.isChecked()) {
                         functionName = "ezlinkTransaction_MRT";
                         functionParameters.add(((AutoCompleteTextView) findViewById(R.id.editMRT1)).getText().toString());
                         functionParameters.add(((AutoCompleteTextView) findViewById(R.id.editMRT2)).getText().toString());
