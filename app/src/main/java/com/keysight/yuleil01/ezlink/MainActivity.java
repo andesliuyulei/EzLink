@@ -394,11 +394,12 @@ public class MainActivity extends AppCompatActivity
         protected void onPreExecute() {
             if (exeState.equals("DataInitComplete")) {
                 progressDialog.setMessage("Performing EZLink transaction in the backend system ...");
+                progressDialog.show();
             } else {
                 progressDialog.setMessage("Initializing data from the backend system ...");
-            }
-            if (!progressDialog.isShowing()) {
-                progressDialog.show();
+                if (!progressDialog.isShowing()) {
+                    progressDialog.show();
+                }
             }
         }
 
