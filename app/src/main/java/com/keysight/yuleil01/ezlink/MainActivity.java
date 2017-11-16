@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     private RadioButton mrtRadio;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo;
     private EditText busNumber, busFrom, busTo;
+    private Button submit;
     private static String transportationType = "MRT";
 
     private static String[] listOfCardNumbers = null;
@@ -86,18 +88,18 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         ezlinkCardNumber = (AutoCompleteTextView) findViewById(R.id.editEZLinkCardNumber);
+        radioGroup = (RadioGroup) findViewById(R.id.selectMRTorBUS);
         mrtRadio = (RadioButton) findViewById(R.id.radioButtonMRT);
         mrtFrom = (AutoCompleteTextView) findViewById(R.id.editMRT1);
         mrtTo = (AutoCompleteTextView) findViewById(R.id.editMRT2);
         busNumber = (EditText) findViewById(R.id.editBusNumber);
         busFrom = (EditText) findViewById(R.id.editBusStop1);
         busTo = (EditText) findViewById(R.id.editBusStop2);
+        submit = (Button) findViewById(R.id.buttonSubmit);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
         busTo.setVisibility(View.GONE);
-
-        radioGroup = (RadioGroup) findViewById(R.id.selectMRTorBUS);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
@@ -143,20 +145,20 @@ public class MainActivity extends AppCompatActivity
 
     /** Called when the user taps the Submit Transaction button */
     public void submitTransaction(View view) {
-        findViewById(R.id.buttonSubmit).setEnabled(Boolean.FALSE);
+        submit.setEnabled(Boolean.FALSE);
         getResultsFromApi();
-        findViewById(R.id.buttonSubmit).setEnabled(Boolean.TRUE);
+        submit.setEnabled(Boolean.TRUE);
     }
 
     private void displayResult(List<String> output) {
         Intent intent = new Intent(this, PerformEZLinkTransaction.class);
         intent.putExtra(EZLINK_CARD_NUMBER, ezlinkCardNumber.getText().toString());
         intent.putExtra(TRANSPORTATION_TYPE, transportationType);
-        intent.putExtra(MRT_STATION_FROM, ((EditText) findViewById(R.id.editMRT1)).getText().toString());
-        intent.putExtra(MRT_STATION_TO, ((EditText) findViewById(R.id.editMRT2)).getText().toString());
-        intent.putExtra(BUS_NUMBER, ((EditText) findViewById(R.id.editBusNumber)).getText().toString());
-        intent.putExtra(BUS_STOP_FROM, ((EditText) findViewById(R.id.editBusStop1)).getText().toString());
-        intent.putExtra(BUS_STOP_TO, ((EditText) findViewById(R.id.editBusStop2)).getText().toString());
+        intent.putExtra(MRT_STATION_FROM, mrtFrom.getText().toString());
+        intent.putExtra(MRT_STATION_TO, mrtTo.getText().toString());
+        intent.putExtra(BUS_NUMBER, busNumber.getText().toString());
+        intent.putExtra(BUS_STOP_FROM, busFrom.getText().toString());
+        intent.putExtra(BUS_STOP_TO, busTo.getText().toString());
         if (output != null) {
             intent.putExtra(EZLINK_RESULT1, output.toArray()[0].toString());
             intent.putExtra(EZLINK_RESULT2, output.toArray()[1].toString());
@@ -319,13 +321,13 @@ public class MainActivity extends AppCompatActivity
                     functionParameters.add(ezlinkCardNumber.getText().toString());
                     if (mrtRadio.isChecked()) {
                         functionName = "ezlinkTransaction_MRT";
-                        functionParameters.add(((AutoCompleteTextView) findViewById(R.id.editMRT1)).getText().toString());
-                        functionParameters.add(((AutoCompleteTextView) findViewById(R.id.editMRT2)).getText().toString());
+                        functionParameters.add(mrtFrom.getText().toString());
+                        functionParameters.add(mrtTo.getText().toString());
                     } else {
                         functionName = "ezlinkTransaction_BUS";
-                        functionParameters.add(((EditText) findViewById(R.id.editBusNumber)).getText().toString());
-                        functionParameters.add(((EditText) findViewById(R.id.editBusStop1)).getText().toString());
-                        functionParameters.add(((EditText) findViewById(R.id.editBusStop2)).getText().toString());
+                        functionParameters.add(busNumber.getText().toString());
+                        functionParameters.add(busFrom.getText().toString());
+                        functionParameters.add(busTo.getText().toString());
                     }
                     break;
             }
