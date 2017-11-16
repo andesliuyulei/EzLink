@@ -15,10 +15,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.common.ConnectionResult;
@@ -48,7 +48,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class MainActivity extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks {
     static GoogleAccountCredential mCredential;
-    ProgressDialog mProgress;
+    ProgressDialog progressDialog;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -71,23 +71,26 @@ public class MainActivity extends AppCompatActivity
     public static final String EZLINK_RESULT3 = "EZLink Result 3";
     public static final String EZLINK_RESULT4 = "EZLink Result 4";
 
-    private View mrtFrom, mrtTo, busNumber, busFrom, busTo;
     private RadioGroup radioGroup;
-    private Spinner ezlinkCardNumber;
+    private RadioButton mrtRadio;
+    private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo;
+    private EditText busNumber, busFrom, busTo;
     private static String transportationType = "MRT";
+
+    private static String[] listOfCardNumbers = null;
+    private static String[] listOfRailStations = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mProgress = new ProgressDialog(this);
-        mProgress.setMessage("Calling Google Apps Script Execution API ...");
         setContentView(R.layout.activity_main);
 
-        mrtFrom = findViewById(R.id.editMRT1);
-        mrtTo = findViewById(R.id.editMRT2);
-        busNumber = findViewById(R.id.editBusNumber);
-        busFrom = findViewById(R.id.editBusStop1);
-        busTo = findViewById(R.id.editBusStop2);
+        mrtRadio = (RadioButton) findViewById(R.id.radioButtonMRT);
+        mrtFrom = (AutoCompleteTextView) findViewById(R.id.editMRT1);
+        mrtTo = (AutoCompleteTextView) findViewById(R.id.editMRT2);
+        busNumber = (EditText) findViewById(R.id.editBusNumber);
+        busFrom = (EditText) findViewById(R.id.editBusStop1);
+        busTo = (EditText) findViewById(R.id.editBusStop2);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
@@ -97,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                if (((RadioButton) findViewById(R.id.radioButtonMRT)).isChecked() == true) {
+                if (mrtRadio.isChecked() == true) {
                     mrtFrom.setVisibility(View.VISIBLE);
                     mrtTo.setVisibility(View.VISIBLE);
                     busNumber.setVisibility(View.GONE);
@@ -115,22 +118,26 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        ezlinkCardNumber = (Spinner) findViewById(R.id.spinnerEZLinkCardNumber);
-        final String[] ezlinkcards = new String[] {
-                "<Select EZLink Card Number>",
-                "1009622003582322",
-                "1009622007955551",
-                "1009622008118657",
-                "8009150000708910"
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, ezlinkcards);
-        ezlinkCardNumber.setAdapter(adapter);
-
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+
+        progressDialog = new ProgressDialog(this);
+        initializeDataFromApi();
+    }
+
+    private void initializeDataFromApi() {
+        if (! isGooglePlayServicesAvailable()) {
+            acquireGooglePlayServices();
+        } else if (mCredential.getSelectedAccountName() == null) {
+            chooseAccount();
+        } else if (! isDeviceOnline()) {
+            //mOutputText.setText("No network connection available.");
+        } else {
+            new MakeRequestTask(mCredential, "GetCardList").execute();
+            new MakeRequestTask(mCredential, "GetRailStationList").execute();
+        }
     }
 
     /** Called when the user taps the Submit Transaction button */
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity
 
     private void displayResult(List<String> output) {
         Intent intent = new Intent(this, PerformEZLinkTransaction.class);
-        intent.putExtra(EZLINK_CARD_NUMBER, ezlinkCardNumber.getSelectedItem().toString());
+        intent.putExtra(EZLINK_CARD_NUMBER, ezlinkCardNumber.getText().toString());
         intent.putExtra(TRANSPORTATION_TYPE, transportationType);
         intent.putExtra(MRT_STATION_FROM, ((EditText) findViewById(R.id.editMRT1)).getText().toString());
         intent.putExtra(MRT_STATION_TO, ((EditText) findViewById(R.id.editMRT2)).getText().toString());
@@ -173,7 +180,7 @@ public class MainActivity extends AppCompatActivity
         } else if (! isDeviceOnline()) {
             //mOutputText.setText("No network connection available.");
         } else {
-            new MakeRequestTask(mCredential).execute();
+            new MakeRequestTask(mCredential, "DataInitComplete").execute();
         }
     }
 
@@ -222,7 +229,8 @@ public class MainActivity extends AppCompatActivity
                     .getString(PREF_ACCOUNT_NAME, null);
             if (accountName != null) {
                 mCredential.setSelectedAccountName(accountName);
-                getResultsFromApi();
+                //getResultsFromApi();
+                initializeDataFromApi();
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
@@ -257,10 +265,12 @@ public class MainActivity extends AppCompatActivity
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.script.Script mService = null;
         private Exception mLastError = null;
+        private String exeState = null;
 
-        MakeRequestTask(GoogleAccountCredential credential) {
+        MakeRequestTask(GoogleAccountCredential credential, String state) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            exeState = state;
             mService = new com.google.api.services.script.Script.Builder(
                     transport, jsonFactory, setHttpTimeout(credential))
                     .setApplicationName("EZLink")
@@ -297,16 +307,26 @@ public class MainActivity extends AppCompatActivity
             String functionName = "";
             List<Object> functionParameters = new ArrayList<>();
 
-            functionParameters.add(ezlinkCardNumber.getSelectedItem().toString());
-            if (transportationType.equals("MRT")) {
-                functionName = "ezlinkTransaction_MRT";
-                functionParameters.add(((EditText) findViewById(R.id.editMRT1)).getText().toString());
-                functionParameters.add(((EditText) findViewById(R.id.editMRT2)).getText().toString());
-            } else {
-                functionName = "ezlinkTransaction_BUS";
-                functionParameters.add(((EditText) findViewById(R.id.editBusNumber)).getText().toString());
-                functionParameters.add(((EditText) findViewById(R.id.editBusStop1)).getText().toString());
-                functionParameters.add(((EditText) findViewById(R.id.editBusStop2)).getText().toString());
+            switch (exeState) {
+                case "GetCardList":
+                    functionName = "getListOfActiveCardNumbers";
+                    break;
+                case "GetRailStationList":
+                    functionName = "getListOfRailStations";
+                    break;
+                case "DataInitComplete":
+                    functionParameters.add(ezlinkCardNumber.getText().toString());
+                    if (transportationType.equals("MRT")) {
+                        functionName = "ezlinkTransaction_MRT";
+                        functionParameters.add(((AutoCompleteTextView) findViewById(R.id.editMRT1)).getText().toString());
+                        functionParameters.add(((AutoCompleteTextView) findViewById(R.id.editMRT2)).getText().toString());
+                    } else {
+                        functionName = "ezlinkTransaction_BUS";
+                        functionParameters.add(((EditText) findViewById(R.id.editBusNumber)).getText().toString());
+                        functionParameters.add(((EditText) findViewById(R.id.editBusStop1)).getText().toString());
+                        functionParameters.add(((EditText) findViewById(R.id.editBusStop2)).getText().toString());
+                    }
+                    break;
             }
 
             // Create an execution request object.
@@ -372,25 +392,45 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPreExecute() {
-            //mOutputText.setText("");
-            mProgress.show();
+            if (exeState.equals("DataInitComplete")) {
+                progressDialog.setMessage("Performing EZLink transaction in the backend system ...");
+            } else {
+                progressDialog.setMessage("Initializing data from the backend system ...");
+            }
+            if (!progressDialog.isShowing()) {
+                progressDialog.show();
+            }
         }
 
         @Override
         protected void onPostExecute(List<String> output) {
-            mProgress.hide();
-            if (output == null || output.size() == 0) {
-                //mOutputText.setText("No results returned.");
-            } else {
-                //output.add(0, "Data retrieved using the Google Apps Script Execution API:");
-                //mOutputText.setText(TextUtils.join("\n", output));
+            switch (exeState) {
+                case "GetCardList":
+                    if (listOfRailStations != null) {
+                        progressDialog.hide();
+                    }
+                    listOfCardNumbers = output.toArray(new String[0]);
+                    ezlinkCardNumber = (AutoCompleteTextView) findViewById(R.id.editEZLinkCardNumber);
+                    ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfCardNumbers));
+                    break;
+                case "GetRailStationList":
+                    if (listOfCardNumbers != null) {
+                        progressDialog.hide();
+                    }
+                    listOfRailStations = output.toArray(new String[0]);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfRailStations);
+                    ((AutoCompleteTextView) findViewById(R.id.editMRT1)).setAdapter(adapter);
+                    ((AutoCompleteTextView) findViewById(R.id.editMRT2)).setAdapter(adapter);
+                    break;
+                case "DataInitComplete":
+                    progressDialog.hide();
+                    displayResult(output);
+                    break;
             }
-            displayResult(output);
         }
 
         @Override
         protected void onCancelled() {
-            mProgress.hide();
             if (mLastError != null) {
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
                     showGooglePlayServicesAvailabilityErrorDialog(
@@ -471,7 +511,8 @@ public class MainActivity extends AppCompatActivity
                     //        "This app requires Google Play Services. Please install " +
                     //                "Google Play Services on your device and relaunch this app.");
                 } else {
-                    getResultsFromApi();
+                    //getResultsFromApi();
+                    initializeDataFromApi();
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
@@ -486,13 +527,15 @@ public class MainActivity extends AppCompatActivity
                         editor.putString(PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
                         mCredential.setSelectedAccountName(accountName);
-                        getResultsFromApi();
+                        //getResultsFromApi();
+                        initializeDataFromApi();
                     }
                 }
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
-                    getResultsFromApi();
+                    //getResultsFromApi();
+                    initializeDataFromApi();
                 }
                 break;
         }
