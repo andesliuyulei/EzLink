@@ -86,25 +86,25 @@ public class MainActivity extends AppCompatActivity
     private static String transportationType = "MRT";
 
     private static int initJobCount = 0;
-    private static String[] listOfCardNumbers = null;
-    private static String[] listOfRailStations = null;
     private static String[][] knownFareTable = null;
+    private static List<String> knownFareList = null;
+    private static List<String> knownFareList_MrtMrt = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ezlinkCardNumber = (AutoCompleteTextView) findViewById(R.id.editEZLinkCardNumber);
-        radioGroup = (RadioGroup) findViewById(R.id.selectMRTorBUS);
-        mrtRadio = (RadioButton) findViewById(R.id.radioButtonMRT);
-        mrtFrom = (AutoCompleteTextView) findViewById(R.id.editMRT1);
-        mrtTo = (AutoCompleteTextView) findViewById(R.id.editMRT2);
-        busNumber = (EditText) findViewById(R.id.editBusNumber);
-        busFrom = (EditText) findViewById(R.id.editBusStop1);
-        busTo = (EditText) findViewById(R.id.editBusStop2);
-        fareSgd = (EditText) findViewById(R.id.editFareSgd);
-        submit = (Button) findViewById(R.id.buttonSubmit);
+        ezlinkCardNumber = findViewById(R.id.editEZLinkCardNumber);
+        radioGroup = findViewById(R.id.selectMRTorBUS);
+        mrtRadio = findViewById(R.id.radioButtonMRT);
+        mrtFrom = findViewById(R.id.editMRT1);
+        mrtTo = findViewById(R.id.editMRT2);
+        busNumber = findViewById(R.id.editBusNumber);
+        busFrom = findViewById(R.id.editBusStop1);
+        busTo = findViewById(R.id.editBusStop2);
+        fareSgd = findViewById(R.id.editFareSgd);
+        submit = findViewById(R.id.buttonSubmit);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity
         } else if (! isDeviceOnline()) {
             //mOutputText.setText("No network connection available.");
         } else {
+            initJobCount = 0;
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfActiveCardNumbers", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getKnownFareTable", null).execute();
@@ -171,13 +172,9 @@ public class MainActivity extends AppCompatActivity
 
     /** Called when the user taps the Submit Transaction button */
     public void submitTransaction(View view) {
-        if (ezlinkCardNumber.getText().toString().equals("")) {
-            alert("Please enter EzLink card number.");
-        } else {
-            submit.setEnabled(Boolean.FALSE);
-            getResultsFromApi();
-            submit.setEnabled(Boolean.TRUE);
-        }
+        submit.setEnabled(Boolean.FALSE);
+        getResultsFromApi();
+        submit.setEnabled(Boolean.TRUE);
     }
 
     private void displayResult(List<String> output) {
@@ -198,6 +195,9 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    /**
+     * Description: Get the fare of MRT to MRT route.
+     * /
     private float getFare_Mrt_Mrt(String mrt1, String mrt2) {
         for (int i=0; i<knownFareTable.length; i++) {
             if (knownFareTable[i][0].equals("MRT-MRT")) {
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
         return 0;
-    }
+    }//*/
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -239,10 +239,9 @@ public class MainActivity extends AppCompatActivity
 
             String mrt1 = mrtFrom.getText().toString();
             String mrt2 = mrtTo.getText().toString();
-            float mrtFare = getFare_Mrt_Mrt(mrt1, mrt2);
             functionParameters.add(mrt1);
             functionParameters.add(mrt2);
-            if (mrtFare > 0) {
+            if (knownFareList_MrtMrt.indexOf(mrt1 + "|" + mrt2) >= 0) {
                 functionName = "ezlinkTransaction_MrtMrt";
             } else {
                 if (!fareSgd.isShown()) {
@@ -254,8 +253,9 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
                 functionName = "ezlinkTransaction_MrtMrt_NewFare";
-                mrtFare = Float.parseFloat(fareSgd.getText().toString());
-                functionParameters.add(mrtFare);
+                functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
+                knownFareList_MrtMrt.add(mrt1 + "|" + mrt2);
+                knownFareList_MrtMrt.add(mrt2 + "|" + mrt1);
             }
         } else {
             functionName = "ezlinkTransaction_Bus";
@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(List<String> output) {
             switch (functionName) {
                 case "getListOfActiveCardNumbers":
-                    listOfCardNumbers = output.toArray(new String[0]);
+                    String[] listOfCardNumbers = output.toArray(new String[0]);
                     ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfCardNumbers));
                     initJobCount++;
                     if (initJobCount >= 3) {
@@ -477,7 +477,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     break;
                 case "getListOfRailStations":
-                    listOfRailStations = output.toArray(new String[0]);
+                    String[] listOfRailStations = output.toArray(new String[0]);
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfRailStations);
                     mrtFrom.setAdapter(adapter);
                     mrtTo.setAdapter(adapter);
@@ -487,10 +487,15 @@ public class MainActivity extends AppCompatActivity
                     }
                     break;
                 case "getKnownFareTable":
-                    String[] temp = output.toArray(new String[0]);
-                    knownFareTable = new String[temp.length][];
-                    for (int i=0; i<temp.length; i++) {
-                        knownFareTable[i] = temp[i].split("\\|");
+                    knownFareList = output;
+                    knownFareList_MrtMrt = new ArrayList<>();
+                    knownFareTable = new String[knownFareList.size()][];
+                    for (int i=0; i<knownFareList.size(); i++) {
+                        knownFareTable[i] = knownFareList.get(i).split("\\|");
+                        if (knownFareTable[i][0].equals("MRT-MRT")) {
+                            knownFareList_MrtMrt.add(knownFareTable[i][1] + "|" + knownFareTable[i][2]);
+                            knownFareList_MrtMrt.add(knownFareTable[i][2] + "|" + knownFareTable[i][1]);
+                        }
                     }
                     initJobCount++;
                     if (initJobCount >= 3) {
