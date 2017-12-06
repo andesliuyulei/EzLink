@@ -2,9 +2,11 @@ package com.keysight.yuleil01.ezlink;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -48,7 +50,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks {
-    static GoogleAccountCredential mCredential;
+    static GoogleAccountCredential accountCredential;
     ProgressDialog progressDialog;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -72,15 +74,21 @@ public class MainActivity extends AppCompatActivity
     public static final String EZLINK_RESULT3 = "EZLink Result 3";
     public static final String EZLINK_RESULT4 = "EZLink Result 4";
 
+    // ID of the script to call. Acquire this from the Apps Script editor,
+    // under Publish > Deploy as API executable.
+    private static String scriptId_EzLink = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG"; //ezlink
+
     private RadioGroup radioGroup;
     private RadioButton mrtRadio;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo;
-    private EditText busNumber, busFrom, busTo;
+    private EditText busNumber, busFrom, busTo, fareSgd;
     private Button submit;
     private static String transportationType = "MRT";
 
+    private static int initJobCount = 0;
     private static String[] listOfCardNumbers = null;
     private static String[] listOfRailStations = null;
+    private static String[][] knownFareTable = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,11 +103,13 @@ public class MainActivity extends AppCompatActivity
         busNumber = (EditText) findViewById(R.id.editBusNumber);
         busFrom = (EditText) findViewById(R.id.editBusStop1);
         busTo = (EditText) findViewById(R.id.editBusStop2);
+        fareSgd = (EditText) findViewById(R.id.editFareSgd);
         submit = (Button) findViewById(R.id.buttonSubmit);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
         busTo.setVisibility(View.GONE);
+        fareSgd.setVisibility(View.GONE);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
@@ -122,7 +132,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Initialize credentials and service object..
-        mCredential = GoogleAccountCredential.usingOAuth2(
+        accountCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
 
@@ -130,24 +140,44 @@ public class MainActivity extends AppCompatActivity
         initializeDataFromApi();
     }
 
+    private void alert(String msg) {
+        AlertDialog.Builder abuilder = new AlertDialog.Builder(this);
+        abuilder.setMessage(msg);
+        abuilder.setCancelable(Boolean.FALSE);
+        abuilder.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert11 = abuilder.create();
+        alert11.show();
+    }
+
     private void initializeDataFromApi() {
         if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
-        } else if (mCredential.getSelectedAccountName() == null) {
+        } else if (accountCredential.getSelectedAccountName() == null) {
             chooseAccount();
         } else if (! isDeviceOnline()) {
             //mOutputText.setText("No network connection available.");
         } else {
-            new MakeRequestTask(mCredential, "GetCardList").execute();
-            new MakeRequestTask(mCredential, "GetRailStationList").execute();
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfActiveCardNumbers", null).execute();
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getKnownFareTable", null).execute();
         }
     }
 
     /** Called when the user taps the Submit Transaction button */
     public void submitTransaction(View view) {
-        submit.setEnabled(Boolean.FALSE);
-        getResultsFromApi();
-        submit.setEnabled(Boolean.TRUE);
+        if (ezlinkCardNumber.getText().toString().equals("")) {
+            alert("Please enter EzLink card number.");
+        } else {
+            submit.setEnabled(Boolean.FALSE);
+            getResultsFromApi();
+            submit.setEnabled(Boolean.TRUE);
+        }
     }
 
     private void displayResult(List<String> output) {
@@ -168,6 +198,19 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    private float getFare_Mrt_Mrt(String mrt1, String mrt2) {
+        for (int i=0; i<knownFareTable.length; i++) {
+            if (knownFareTable[i][0].equals("MRT-MRT")) {
+                if (knownFareTable[i][1].equals(mrt1) && knownFareTable[i][2].equals(mrt2)) {
+                    return Float.parseFloat(knownFareTable[i][3]);
+                } else if (knownFareTable[i][1].equals(mrt2) && knownFareTable[i][2].equals(mrt1)) {
+                    return Float.parseFloat(knownFareTable[i][3]);
+                }
+            }
+        }
+        return 0;
+    }
+
     /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
@@ -176,15 +219,52 @@ public class MainActivity extends AppCompatActivity
      * appropriate.
      */
     private void getResultsFromApi() {
-        if (! isGooglePlayServicesAvailable()) {
-            acquireGooglePlayServices();
-        } else if (mCredential.getSelectedAccountName() == null) {
-            chooseAccount();
-        } else if (! isDeviceOnline()) {
-            //mOutputText.setText("No network connection available.");
-        } else {
-            new MakeRequestTask(mCredential, "DataInitComplete").execute();
+        if (ezlinkCardNumber.getText().toString().equals("")) {
+            alert("Please enter 'EZLink Card Number'.");
+            return;
         }
+
+        String functionName = "";
+        List<Object> functionParameters = new ArrayList<>();
+
+        functionParameters.add(ezlinkCardNumber.getText().toString());
+        if (mrtRadio.isChecked()) {
+            if (mrtFrom.getText().toString().equals("")) {
+                alert("Please enter 'MRT Station (From)'.");
+                return;
+            } else if (mrtTo.getText().toString().equals("")) {
+                alert("Please enter 'MRT Station (To)'.");
+                return;
+            }
+
+            String mrt1 = mrtFrom.getText().toString();
+            String mrt2 = mrtTo.getText().toString();
+            float mrtFare = getFare_Mrt_Mrt(mrt1, mrt2);
+            functionParameters.add(mrt1);
+            functionParameters.add(mrt2);
+            if (mrtFare > 0) {
+                functionName = "ezlinkTransaction_MrtMrt";
+            } else {
+                if (!fareSgd.isShown()) {
+                    alert("The fare (" + mrt1 + "-" + mrt2 + ") is unknown. Please enter 'Fare (SGD)'.");
+                    fareSgd.setVisibility(View.VISIBLE);
+                    return;
+                } else if (fareSgd.getText().toString().equals("")) {
+                    alert("Please enter 'Fare (SGD)'.");
+                    return;
+                }
+                functionName = "ezlinkTransaction_MrtMrt_NewFare";
+                mrtFare = Float.parseFloat(fareSgd.getText().toString());
+                functionParameters.add(mrtFare);
+            }
+        } else {
+            functionName = "ezlinkTransaction_Bus";
+            functionParameters.add(busNumber.getText().toString());
+            functionParameters.add(busFrom.getText().toString());
+            functionParameters.add(busTo.getText().toString());
+        }
+
+        new MakeRequestTask(accountCredential, scriptId_EzLink, functionName, functionParameters).execute();
     }
 
     /**
@@ -231,13 +311,13 @@ public class MainActivity extends AppCompatActivity
             String accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null);
             if (accountName != null) {
-                mCredential.setSelectedAccountName(accountName);
+                accountCredential.setSelectedAccountName(accountName);
                 //getResultsFromApi();
                 initializeDataFromApi();
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
-                        mCredential.newChooseAccountIntent(),
+                        accountCredential.newChooseAccountIntent(),
                         REQUEST_ACCOUNT_PICKER);
             }
         } else {
@@ -268,12 +348,18 @@ public class MainActivity extends AppCompatActivity
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.script.Script mService = null;
         private Exception mLastError = null;
-        private String exeState = null;
+        //private String exeState = null;
+        private String scriptId = null;
+        private String functionName = null;
+        private List<Object> functionParameters = null;
 
-        MakeRequestTask(GoogleAccountCredential credential, String state) {
+        MakeRequestTask(GoogleAccountCredential credential, String script, String function, List<Object> parameters) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            exeState = state;
+            //exeState = state;
+            scriptId = script;
+            functionName = function;
+            functionParameters = parameters;
             mService = new com.google.api.services.script.Script.Builder(
                     transport, jsonFactory, setHttpTimeout(credential))
                     .setApplicationName("EZLink")
@@ -302,39 +388,10 @@ public class MainActivity extends AppCompatActivity
          * @return list of String folder names and their IDs
          * @throws IOException
          */
-        private List<String> getDataFromApi()
-                throws IOException, GoogleAuthException {
-            // ID of the script to call. Acquire this from the Apps Script editor,
-            // under Publish > Deploy as API executable.
-            String scriptId = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG"; //ezlink
-            String functionName = "";
-            List<Object> functionParameters = new ArrayList<>();
-
-            switch (exeState) {
-                case "GetCardList":
-                    functionName = "getListOfActiveCardNumbers";
-                    break;
-                case "GetRailStationList":
-                    functionName = "getListOfRailStations";
-                    break;
-                case "DataInitComplete":
-                    functionParameters.add(ezlinkCardNumber.getText().toString());
-                    if (mrtRadio.isChecked()) {
-                        functionName = "ezlinkTransaction_MRT";
-                        functionParameters.add(mrtFrom.getText().toString());
-                        functionParameters.add(mrtTo.getText().toString());
-                    } else {
-                        functionName = "ezlinkTransaction_BUS";
-                        functionParameters.add(busNumber.getText().toString());
-                        functionParameters.add(busFrom.getText().toString());
-                        functionParameters.add(busTo.getText().toString());
-                    }
-                    break;
-            }
-
+        private List<String> getDataFromApi() throws IOException, GoogleAuthException {
             // Create an execution request object.
             ExecutionRequest request = new ExecutionRequest()
-                    .setDevMode(Boolean.TRUE)
+                    .setDevMode(Boolean.TRUE) //TODO: remove dev mode before release.
                     .setParameters(functionParameters)
                     .setFunction(functionName);
 
@@ -395,39 +452,52 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPreExecute() {
-            if (exeState.equals("DataInitComplete")) {
-                progressDialog.setMessage("Performing EZLink transaction in the backend system ...");
-                progressDialog.show();
-                progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
-            } else {
+            if (functionName.equals("getListOfActiveCardNumbers") || functionName.equals("getListOfRailStations") || functionName.equals("getKnownFareTable")) {
                 progressDialog.setMessage("Initializing data from the backend system ...");
                 if (!progressDialog.isShowing()) {
                     progressDialog.show();
                     progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
                 }
+            } else {
+                progressDialog.setMessage("Performing EZLink transaction in the backend system ...");
+                progressDialog.show();
+                progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
             }
         }
 
         @Override
         protected void onPostExecute(List<String> output) {
-            switch (exeState) {
-                case "GetCardList":
-                    if (listOfRailStations != null) {
-                        progressDialog.hide();
-                    }
+            switch (functionName) {
+                case "getListOfActiveCardNumbers":
                     listOfCardNumbers = output.toArray(new String[0]);
                     ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfCardNumbers));
-                    break;
-                case "GetRailStationList":
-                    if (listOfCardNumbers != null) {
+                    initJobCount++;
+                    if (initJobCount >= 3) {
                         progressDialog.hide();
                     }
+                    break;
+                case "getListOfRailStations":
                     listOfRailStations = output.toArray(new String[0]);
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfRailStations);
                     mrtFrom.setAdapter(adapter);
                     mrtTo.setAdapter(adapter);
+                    initJobCount++;
+                    if (initJobCount >= 3) {
+                        progressDialog.hide();
+                    }
                     break;
-                case "DataInitComplete":
+                case "getKnownFareTable":
+                    String[] temp = output.toArray(new String[0]);
+                    knownFareTable = new String[temp.length][];
+                    for (int i=0; i<temp.length; i++) {
+                        knownFareTable[i] = temp[i].split("\\|");
+                    }
+                    initJobCount++;
+                    if (initJobCount >= 3) {
+                        progressDialog.hide();
+                    }
+                    break;
+                default:
                     progressDialog.hide();
                     displayResult(output);
                     break;
@@ -531,7 +601,7 @@ public class MainActivity extends AppCompatActivity
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString(PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
-                        mCredential.setSelectedAccountName(accountName);
+                        accountCredential.setSelectedAccountName(accountName);
                         //getResultsFromApi();
                         initializeDataFromApi();
                     }
