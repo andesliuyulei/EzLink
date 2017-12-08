@@ -5,27 +5,21 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/sbw_yis"
-            android:title="MRT: Sembawang-Yishun (*2322)" />
-        <item
-            android:id="@+id/yis_sbw"
-            android:title="MRT: Yishun-Sembawang (*2322)" />
+            android:id="@+id/init_data"
+            android:title="Initialize Data" />
         <item
             android:id="@+id/rst_form"
             android:title="Reset Form" />
-        <item
-            android:id="@+id/reinit_data"
-            android:title="Reinitialize Data" />
     </group>
 
     <item android:title="Reserved Area">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:title="Share" />
+                android:id="@+id/sbw_yis"
+                android:title="MRT: Sembawang-Yishun (*2322)" />
             <item
-                android:id="@+id/nav_send"
-                android:title="Send" />
+                android:id="@+id/yis_sbw"
+                android:title="MRT: Yishun-Sembawang (*2322)" />
         </menu>
     </item>
 

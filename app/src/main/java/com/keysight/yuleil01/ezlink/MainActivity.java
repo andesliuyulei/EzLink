@@ -59,10 +59,6 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private String[] mPlanetTitles;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-
     static GoogleAccountCredential accountCredential;
     ProgressDialog progressDialog;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -92,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String scriptId_EzLink = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG"; //ezlink
 
     private RadioGroup radioGroup;
-    private RadioButton mrtRadio;
+    private RadioButton mrtRadio, busRadio;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo;
     private EditText busNumber, busFrom, busTo, fareSgd;
     private Button submit;
@@ -122,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ezlinkCardNumber = findViewById(R.id.editEZLinkCardNumber);
         radioGroup = findViewById(R.id.selectMRTorBUS);
         mrtRadio = findViewById(R.id.radioButtonMRT);
+        busRadio = findViewById(R.id.radioButtonBUS);
         mrtFrom = findViewById(R.id.editMRT1);
         mrtTo = findViewById(R.id.editMRT2);
         busNumber = findViewById(R.id.editBusNumber);
@@ -172,18 +169,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.sbw_yis:
+                ezlinkCardNumber.setText("1009622003582322");
+                mrtRadio.setChecked(Boolean.TRUE);
+                mrtFrom.setText("Sembawang");
+                mrtTo.setText("Yishun");
+                getResultsFromApi();
                 break;
             case R.id.yis_sbw:
+                ezlinkCardNumber.setText("1009622003582322");
+                mrtRadio.setChecked(Boolean.TRUE);
+                mrtFrom.setText("Yishun");
+                mrtTo.setText("Sembawang");
+                getResultsFromApi();
                 break;
             case R.id.rst_form:
                 ezlinkCardNumber.setText("");
-                mrtFrom.setText("");
-                mrtTo.setText("");
+                if (mrtRadio.isChecked()) {
+                    mrtFrom.setText("");
+                    mrtTo.setText("");
+                } else {
+                    busNumber.setText("");
+                    busFrom.setText("");
+                    busTo.setText("");
+                }
                 fareSgd.setVisibility(View.GONE);
                 break;
-            case R.id.reinit_data:
+            case R.id.init_data:
+                initializeDataFromApi();
                 break;
             default:
+                //do nothing here!
                 break;
         }
 
@@ -192,6 +207,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    /**
+     * @description //TODO need to revisit this function.
+     * @param msg
+     */
     private void alert(String msg) {
         AlertDialog.Builder abuilder = new AlertDialog.Builder(this);
         abuilder.setMessage(msg);
@@ -213,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (accountCredential.getSelectedAccountName() == null) {
             chooseAccount();
         } else if (! isDeviceOnline()) {
-            //mOutputText.setText("No network connection available.");
+            alert("No network connection available.");
         } else {
             initJobCount = 0;
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfActiveCardNumbers", null).execute();
@@ -316,7 +335,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             functionParameters.add(busTo.getText().toString());
         }
 
-        new MakeRequestTask(accountCredential, scriptId_EzLink, functionName, functionParameters).execute();
+        if (! isDeviceOnline()) {
+            alert("No network connection available.");
+            return;
+        } else {
+            new MakeRequestTask(accountCredential, scriptId_EzLink, functionName, functionParameters).execute();
+        }
     }
 
     /**
@@ -525,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfCardNumbers));
                     initJobCount++;
                     if (initJobCount >= 3) {
-                        progressDialog.hide();
+                        progressDialog.cancel();//.hide();
                     }
                     break;
                 case "getListOfRailStations":
@@ -535,7 +559,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mrtTo.setAdapter(adapter);
                     initJobCount++;
                     if (initJobCount >= 3) {
-                        progressDialog.hide();
+                        progressDialog.cancel();//.hide();
                     }
                     break;
                 case "getKnownFareTable":
@@ -551,11 +575,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     initJobCount++;
                     if (initJobCount >= 3) {
-                        progressDialog.hide();
+                        progressDialog.cancel();//.hide();
                     }
                     break;
                 default:
-                    progressDialog.hide();
+                    progressDialog.cancel();//.hide();
                     displayResult(output);
                     break;
             }
