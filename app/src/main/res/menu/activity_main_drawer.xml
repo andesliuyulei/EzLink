@@ -5,20 +5,20 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:title="Import" />
+            android:id="@+id/sbw_yis"
+            android:title="MRT: Sembawang-Yishun (*2322)" />
         <item
-            android:id="@+id/nav_gallery"
-            android:title="Gallery" />
+            android:id="@+id/yis_sbw"
+            android:title="MRT: Yishun-Sembawang (*2322)" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:title="Slideshow" />
+            android:id="@+id/rst_form"
+            android:title="Reset Form" />
         <item
-            android:id="@+id/nav_manage"
-            android:title="Tools" />
+            android:id="@+id/reinit_data"
+            android:title="Reinitialize Data" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Reserved Area">
         <menu>
             <item
                 android:id="@+id/nav_share"

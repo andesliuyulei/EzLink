@@ -9,4 +9,7 @@
     <string name="hint_mrt_station_1">MRT Station (From)</string>
     <string name="radio_bus">BUS</string>
     <string name="radio_mrt">MRT</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>
