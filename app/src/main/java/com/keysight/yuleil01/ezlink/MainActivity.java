@@ -549,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfCardNumbers));
                     initJobCount++;
                     if (initJobCount >= 3) {
-                        progressDialog.cancel();//.hide();
+                        progressDialog.dismiss();//.hide();
                     }
                     break;
                 case "getListOfRailStations":
@@ -559,7 +559,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mrtTo.setAdapter(adapter);
                     initJobCount++;
                     if (initJobCount >= 3) {
-                        progressDialog.cancel();//.hide();
+                        progressDialog.dismiss();//.hide();
                     }
                     break;
                 case "getKnownFareTable":
@@ -575,11 +575,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     initJobCount++;
                     if (initJobCount >= 3) {
-                        progressDialog.cancel();//.hide();
+                        progressDialog.dismiss();//.hide();
                     }
                     break;
                 default:
-                    progressDialog.cancel();//.hide();
+                    progressDialog.dismiss();//.hide();
                     displayResult(output);
                     break;
             }
