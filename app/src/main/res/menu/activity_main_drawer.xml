@@ -20,6 +20,12 @@
             <item
                 android:id="@+id/yis_sbw"
                 android:title="MRT: Yishun-Sembawang (*2322)" />
+            <item
+                android:id="@+id/copyto_8657"
+                android:title="Same for LI CHANG (*8657)" />
+            <item
+                android:id="@+id/copyto_8910"
+                android:title="Same for LIU XINTONG (*8910)" />
         </menu>
     </item>
 

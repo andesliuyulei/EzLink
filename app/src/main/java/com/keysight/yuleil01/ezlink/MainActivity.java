@@ -177,6 +177,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.copyto_8657:
+                fareSgd.setText("");
+                fareSgd.setVisibility(View.GONE);
+                ezlinkCardNumber.setText("1009622008118657");
+                getResultsFromApi();
+                break;
+            case R.id.copyto_8910:
+                fareSgd.setText("");
+                fareSgd.setVisibility(View.GONE);
+                ezlinkCardNumber.setText("8009150000708910");
+                getResultsFromApi();
+                break;
             case R.id.sbw_yis:
                 ezlinkCardNumber.setText("1009622003582322");
                 mrtRadio.setChecked(Boolean.TRUE);
@@ -328,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 if (!fareSgd.isShown()) {
                     alert("The fare (" + mrt1 + "-" + mrt2 + "-" + transactionCardType + ") is unknown. Please enter 'Fare (SGD)'.");
+                    fareSgd.setText("");
                     fareSgd.setVisibility(View.VISIBLE);
                     return;
                 } else if (fareSgd.getText().toString().equals("")) {
