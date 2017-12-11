@@ -98,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String[][] knownFareTable = null;
     private static List<String> knownFareList = null;
     private static List<String> knownFareList_MrtMrt = null;
+    private static List<String> ezLinkCardNumbers = null;
+    private static List<String> ezLinkCardTypes = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,6 +161,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         progressDialog = new ProgressDialog(this);
         initializeDataFromApi();
+    }
+
+    /**
+     * @description Get EzLink card type of a EzLink card number.
+     * @param ezLinkCardNumber
+     * @return
+     */
+    private String getEzlinkCardType(String ezLinkCardNumber) {
+        return ezLinkCardTypes.get(ezLinkCardNumbers.indexOf(ezLinkCardNumber));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -235,9 +246,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             alert("No network connection available.");
         } else {
             initJobCount = 0;
-            new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfActiveCardNumbers", null).execute();
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
-            new MakeRequestTask(accountCredential, scriptId_EzLink, "getKnownFareTable", null).execute();
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_KnownFareLookup", null).execute();
         }
     }
 
@@ -290,7 +301,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * appropriate.
      */
     private void getResultsFromApi() {
-        if (ezlinkCardNumber.getText().toString().equals("")) {
+        String transactionCardNumber = ezlinkCardNumber.getText().toString();
+        String transactionCardType = getEzlinkCardType(transactionCardNumber);
+        if (transactionCardNumber.equals("")) {
             alert("Please enter 'EZLink Card Number'.");
             return;
         }
@@ -298,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String functionName = "";
         List<Object> functionParameters = new ArrayList<>();
 
-        functionParameters.add(ezlinkCardNumber.getText().toString());
+        functionParameters.add(transactionCardNumber);
         if (mrtRadio.isChecked()) {
             if (mrtFrom.getText().toString().equals("")) {
                 alert("Please enter 'MRT Station (From)'.");
@@ -312,11 +325,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String mrt2 = mrtTo.getText().toString();
             functionParameters.add(mrt1);
             functionParameters.add(mrt2);
-            if (knownFareList_MrtMrt.indexOf(mrt1 + "|" + mrt2) >= 0) {
+            if (knownFareList_MrtMrt.indexOf(mrt1 + "|" + mrt2 + "|" + transactionCardType) >= 0) {
                 functionName = "ezlinkTransaction_MrtMrt";
             } else {
                 if (!fareSgd.isShown()) {
-                    alert("The fare (" + mrt1 + "-" + mrt2 + ") is unknown. Please enter 'Fare (SGD)'.");
+                    alert("The fare (" + mrt1 + "-" + mrt2 + "-" + transactionCardType + ") is unknown. Please enter 'Fare (SGD)'.");
                     fareSgd.setVisibility(View.VISIBLE);
                     return;
                 } else if (fareSgd.getText().toString().equals("")) {
@@ -325,8 +338,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 functionName = "ezlinkTransaction_MrtMrt_NewFare";
                 functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
-                knownFareList_MrtMrt.add(mrt1 + "|" + mrt2);
-                knownFareList_MrtMrt.add(mrt2 + "|" + mrt1);
+                knownFareList_MrtMrt.add(mrt1 + "|" + mrt2 + "|" + transactionCardType);
+                knownFareList_MrtMrt.add(mrt2 + "|" + mrt1 + "|" + transactionCardType);
             }
         } else {
             functionName = "ezlinkTransaction_Bus";
@@ -543,13 +556,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPostExecute(List<String> output) {
+            String[] titles, cardInfo, fareInfo;
             switch (functionName) {
-                case "getListOfActiveCardNumbers":
-                    String[] listOfCardNumbers = output.toArray(new String[0]);
-                    ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfCardNumbers));
+                case "getInfo_ActiveEzLinkCards":
+                    ezLinkCardNumbers = new ArrayList<>();
+                    ezLinkCardTypes = new ArrayList<>();
+                    titles = output.get(0).split("\\|");
+                    int indexof_EzLinkCardNumber = 0;
+                    int indexof_EzLinkCardType = 0;
+
+                    //the first row are the titles.
+                    for (int i=0; i<titles.length; i++) {
+                        if (titles[i].equals("Card Number")) {
+                            indexof_EzLinkCardNumber = i;
+                        } else if (titles[i].equals("Card Type")) {
+                            indexof_EzLinkCardType = i;
+                        } else {
+                            //do nothing here.
+                        }
+                    }
+
+                    for (int i=1; i<output.size(); i++) {
+                        cardInfo = output.get(i).split("\\|");
+                        ezLinkCardNumbers.add(cardInfo[indexof_EzLinkCardNumber]);
+                        ezLinkCardTypes.add(cardInfo[indexof_EzLinkCardType]);
+                    }
+
+                    ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
                     initJobCount++;
                     if (initJobCount >= 3) {
-                        progressDialog.dismiss();//.hide();
+                        progressDialog.dismiss();
                     }
                     break;
                 case "getListOfRailStations":
@@ -557,6 +593,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfRailStations);
                     mrtFrom.setAdapter(adapter);
                     mrtTo.setAdapter(adapter);
+                    initJobCount++;
+                    if (initJobCount >= 3) {
+                        progressDialog.dismiss();//.hide();
+                    }
+                    break;
+                case "getInfo_KnownFareLookup":
+                    knownFareList_MrtMrt = new ArrayList<>();
+                    titles = output.get(0).split("\\|");
+                    int indexof_Route = 0;
+                    int indexof_Mrt1 = 0;
+                    int indexof_Mrt2 = 0;
+                    int indexof_FareType = 0;
+
+                    //the first row are the titles.
+                    for (int i=0; i<titles.length; i++) {
+                        switch (titles[i]) {
+                            case "Route":
+                                indexof_Route = i;
+                                break;
+                            case "MRT 1":
+                                indexof_Mrt1 = i;
+                                break;
+                            case "MRT 2":
+                                indexof_Mrt2 = i;
+                                break;
+                            case "Fare Type":
+                                indexof_FareType = i;
+                                break;
+                            default:
+                                //do nothing here.
+                                break;
+                        }
+                    }
+
+                    for (int i=1; i<output.size(); i++) {
+                        fareInfo = output.get(i).split("\\|");
+                        if (fareInfo[indexof_Route].equals("MRT-MRT")) {
+                            knownFareList_MrtMrt.add(fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_FareType]);
+                            knownFareList_MrtMrt.add(fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_FareType]);
+                        }
+                    }
+
                     initJobCount++;
                     if (initJobCount >= 3) {
                         progressDialog.dismiss();//.hide();
@@ -575,11 +653,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     initJobCount++;
                     if (initJobCount >= 3) {
-                        progressDialog.dismiss();//.hide();
+                        progressDialog.dismiss();
                     }
                     break;
                 default:
-                    progressDialog.dismiss();//.hide();
+                    progressDialog.dismiss();
                     displayResult(output);
                     break;
             }
