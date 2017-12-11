@@ -95,8 +95,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String transportationType = "MRT";
 
     private static int initJobCount = 0;
-    private static String[][] knownFareTable = null;
-    private static List<String> knownFareList = null;
     private static List<String> knownFareList_MrtMrt = null;
     private static List<String> ezLinkCardNumbers = null;
     private static List<String> ezLinkCardTypes = null;
@@ -638,22 +636,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     initJobCount++;
                     if (initJobCount >= 3) {
                         progressDialog.dismiss();//.hide();
-                    }
-                    break;
-                case "getKnownFareTable":
-                    knownFareList = output;
-                    knownFareList_MrtMrt = new ArrayList<>();
-                    knownFareTable = new String[knownFareList.size()][];
-                    for (int i=0; i<knownFareList.size(); i++) {
-                        knownFareTable[i] = knownFareList.get(i).split("\\|");
-                        if (knownFareTable[i][0].equals("MRT-MRT")) {
-                            knownFareList_MrtMrt.add(knownFareTable[i][1] + "|" + knownFareTable[i][2]);
-                            knownFareList_MrtMrt.add(knownFareTable[i][2] + "|" + knownFareTable[i][1]);
-                        }
-                    }
-                    initJobCount++;
-                    if (initJobCount >= 3) {
-                        progressDialog.dismiss();
                     }
                     break;
                 default:
