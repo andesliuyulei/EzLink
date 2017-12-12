@@ -50,8 +50,13 @@ import com.google.api.services.script.model.ExecutionRequest;
 import com.google.api.services.script.model.Operation;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -312,11 +317,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private void getResultsFromApi() {
         String transactionCardNumber = ezlinkCardNumber.getText().toString();
-        String transactionCardType = getEzlinkCardType(transactionCardNumber);
         if (transactionCardNumber.equals("")) {
             alert("Please enter 'EZLink Card Number'.");
             return;
         }
+        String transactionCardType = getEzlinkCardType(transactionCardNumber);
+
+        /*//not enabled yet.
+        Date now = new Date();
+        int day = now.getDay();
+        int hour = now.getHours();
+        int minute = now.getMinutes();
+        if (day >= 1 && day <= 5) {
+            if (hour < 7) {
+                transactionCardType = transactionCardType.concat("/off-peak");
+            } else if (hour == 7 && minute < 45) {
+                transactionCardType = transactionCardType.concat("/off-peak");
+            } else {
+                //do nothing here.
+            }
+        } else {
+            //do nothing here.
+        }//*/
+
+        /*//Requires API level 26.
+        DayOfWeek today = LocalDate.now().getDayOfWeek();
+        LocalTime now = LocalTime.now();
+        int hour = now.getHour();
+        int minute = now.getMinute();
+        if (today.equals(DayOfWeek.MONDAY) ||
+                today.equals(DayOfWeek.TUESDAY) ||
+                today.equals(DayOfWeek.WEDNESDAY) ||
+                today.equals(DayOfWeek.THURSDAY) ||
+                today.equals(DayOfWeek.FRIDAY)) {
+            if (hour < 7) {
+                transactionCardType = transactionCardType.concat("(off-peak)");
+            } else if (hour == 7 && minute < 45) {
+                transactionCardType = transactionCardType.concat("(off-peak)");
+            } else {
+                //do nothing here.
+                transactionCardType = transactionCardType.concat("(off-peak)");
+            }
+        }//*/
 
         String functionName = "";
         List<Object> functionParameters = new ArrayList<>();
@@ -552,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
-            if (functionName.equals("getListOfActiveCardNumbers") || functionName.equals("getListOfRailStations") || functionName.equals("getKnownFareTable")) {
+            if (functionName.equals("getInfo_fActiveCards") || functionName.equals("getListOfRailStations") || functionName.equals("getInfo_KnownFareLookup")) {
                 progressDialog.setMessage("Initializing data from the backend system ...");
                 if (!progressDialog.isShowing()) {
                     progressDialog.show();
