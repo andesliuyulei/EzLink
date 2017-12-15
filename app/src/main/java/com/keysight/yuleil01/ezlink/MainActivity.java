@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
         AlertDialog alert11 = abuilder.create();
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         return 0;
-    }//*/
+    }//end of the function*/
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -330,9 +330,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int minute = now.getMinutes();
         if (day >= 1 && day <= 5) {
             if (hour < 7) {
-                transactionCardType = transactionCardType.concat("/off-peak");
+                transactionCardType = transactionCardType.concat("-pre-peak");
             } else if (hour == 7 && minute < 45) {
-                transactionCardType = transactionCardType.concat("/off-peak");
+                transactionCardType = transactionCardType.concat("-pre-peak");
             } else {
                 //do nothing here.
             }
@@ -351,12 +351,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 today.equals(DayOfWeek.THURSDAY) ||
                 today.equals(DayOfWeek.FRIDAY)) {
             if (hour < 7) {
-                transactionCardType = transactionCardType.concat("(off-peak)");
+                transactionCardType = transactionCardType.concat("(-pre-peak)");
             } else if (hour == 7 && minute < 45) {
-                transactionCardType = transactionCardType.concat("(off-peak)");
+                transactionCardType = transactionCardType.concat("(-pre-peak)");
             } else {
                 //do nothing here.
-                transactionCardType = transactionCardType.concat("(off-peak)");
             }
         }//*/
 
