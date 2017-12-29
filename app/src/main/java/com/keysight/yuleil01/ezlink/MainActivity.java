@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         String transactionCardType = getEzlinkCardType(transactionCardNumber);
 
-        /*//not enabled yet.
+        //2017-12-29: enabled.
         Date now = new Date();
         int day = now.getDay();
         int hour = now.getHours();
