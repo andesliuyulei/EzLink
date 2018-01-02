@@ -390,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 functionName = "ezlinkTransaction_MrtMrt_NewFare";
                 functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
+                functionParameters.add(transactionCardType);
                 knownFareList_MrtMrt.add(mrt1 + "|" + mrt2 + "|" + transactionCardType);
                 knownFareList_MrtMrt.add(mrt2 + "|" + mrt1 + "|" + transactionCardType);
             }
