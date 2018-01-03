@@ -378,6 +378,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             functionParameters.add(mrt2);
             if (knownFareList_MrtMrt.indexOf(mrt1 + "|" + mrt2 + "|" + transactionCardType) >= 0) {
                 functionName = "ezlinkTransaction_MrtMrt";
+                functionParameters.add(transactionCardType);
             } else {
                 if (!fareSgd.isShown()) {
                     alert("The fare (" + mrt1 + "-" + mrt2 + "-" + transactionCardType + ") is unknown. Please enter 'Fare (SGD)'.");
