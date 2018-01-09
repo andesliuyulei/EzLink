@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String scriptId_EzLink = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG"; //ezlink
 
     private RadioGroup radioGroup;
-    private RadioButton mrtRadio, busRadio;
+    private RadioButton mrtRadio, busRadio, retailRadio, topupRadio;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo;
     private EditText busNumber, busFrom, busTo, fareSgd;
     private Button submit;
@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         radioGroup = findViewById(R.id.selectMRTorBUS);
         mrtRadio = findViewById(R.id.radioButtonMRT);
         busRadio = findViewById(R.id.radioButtonBUS);
+        retailRadio = findViewById(R.id.radioButtonRetail);
+        topupRadio = findViewById(R.id.radioButtonTopUp);
         mrtFrom = findViewById(R.id.editMRT1);
         mrtTo = findViewById(R.id.editMRT2);
         busNumber = findViewById(R.id.editBusNumber);
@@ -145,14 +147,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busNumber.setVisibility(View.GONE);
                     busFrom.setVisibility(View.GONE);
                     busTo.setVisibility(View.GONE);
+                    fareSgd.setVisibility(View.GONE);
                     transportationType = "MRT";
-                } else {
+                } else if (busRadio.isChecked() == true) {
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
                     busNumber.setVisibility(View.VISIBLE);
                     busFrom.setVisibility(View.VISIBLE);
                     busTo.setVisibility(View.VISIBLE);
+                    fareSgd.setVisibility(View.GONE);
                     transportationType = "BUS";
+                } else if (retailRadio.isChecked() == true) {
+                    mrtFrom.setVisibility(View.GONE);
+                    mrtTo.setVisibility(View.GONE);
+                    busNumber.setVisibility(View.GONE);
+                    busFrom.setVisibility(View.GONE);
+                    busTo.setVisibility(View.GONE);
+                    fareSgd.setVisibility(View.VISIBLE);
+                    transportationType = "RETAIL";
+                } else if (topupRadio.isChecked() == true) {
+                    mrtFrom.setVisibility(View.GONE);
+                    mrtTo.setVisibility(View.GONE);
+                    busNumber.setVisibility(View.GONE);
+                    busFrom.setVisibility(View.GONE);
+                    busTo.setVisibility(View.GONE);
+                    fareSgd.setVisibility(View.VISIBLE);
+                    transportationType = "TOP UP";
+                } else {
+                    //Do nothing here.
                 }
             }
         });
