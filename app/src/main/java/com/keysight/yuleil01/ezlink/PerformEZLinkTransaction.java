@@ -69,12 +69,26 @@ public class PerformEZLinkTransaction extends AppCompatActivity {
             busStopTo.setVisibility(View.GONE);
             ((TextView) mrtStationFrom).setText("SMRT Station (From): " + intent.getStringExtra(MainActivity.MRT_STATION_FROM));
             ((TextView) mrtStationTo).setText("SMRT Station (To): " + intent.getStringExtra(MainActivity.MRT_STATION_TO));
-        } else {
+        } else if (transportationType.equals("BUS")) {
             mrtStationFrom.setVisibility(View.GONE);
             mrtStationTo.setVisibility(View.GONE);
             ((TextView) busNumber).setText("Bus Number: " + intent.getStringExtra(MainActivity.BUS_NUMBER));
             ((TextView) busStopFrom).setText("Bus Stop (From): " + intent.getStringExtra(MainActivity.BUS_STOP_FROM));
             ((TextView) busStopTo).setText("Bus Stop (To): " + intent.getStringExtra(MainActivity.BUS_STOP_TO));
+        } else if (transportationType.equals("RETAIL")) {
+            mrtStationFrom.setVisibility(View.GONE);
+            mrtStationTo.setVisibility(View.GONE);
+            busNumber.setVisibility(View.GONE);
+            busStopFrom.setVisibility(View.GONE);
+            busStopTo.setVisibility(View.GONE);
+        } else if (transportationType.equals("TOP UP")) {
+            mrtStationFrom.setVisibility(View.GONE);
+            mrtStationTo.setVisibility(View.GONE);
+            busNumber.setVisibility(View.GONE);
+            busStopFrom.setVisibility(View.GONE);
+            busStopTo.setVisibility(View.GONE);
+        } else {
+            //Do nothing here.
         }
         //((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
         findViewById(R.id.distanceTraveled).setVisibility(View.GONE);

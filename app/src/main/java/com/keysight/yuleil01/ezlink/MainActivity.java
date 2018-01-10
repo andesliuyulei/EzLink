@@ -417,11 +417,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 knownFareList_MrtMrt.add(mrt1 + "|" + mrt2 + "|" + transactionCardType);
                 knownFareList_MrtMrt.add(mrt2 + "|" + mrt1 + "|" + transactionCardType);
             }
-        } else {
+        } else if (busRadio.isChecked()) {
             functionName = "ezlinkTransaction_Bus";
             functionParameters.add(busNumber.getText().toString());
             functionParameters.add(busFrom.getText().toString());
             functionParameters.add(busTo.getText().toString());
+        } else if (retailRadio.isChecked()) {
+            functionName = "ezlinkTransaction_Retail";
+            functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
+            //TODO
+        } else if (topupRadio.isChecked()) {
+            functionName = "ezlinkTransaction_ManualTopUp";
+            functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
+        } else {
+            //Do nothing here.
         }
 
         if (! isDeviceOnline()) {
