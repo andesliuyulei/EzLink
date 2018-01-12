@@ -90,11 +90,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // ID of the script to call. Acquire this from the Apps Script editor,
     // under Publish > Deploy as API executable.
-    private static String scriptId_EzLink = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG"; //ezlink
+    private static final String scriptId_EzLink = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG"; //ezlink
+    private static final String scriptId_MyBank = "MoNdSxfXDH8wP_ODK4qZ9IBU9l98eQNnp";
 
     private RadioGroup radioGroup;
     private RadioButton mrtRadio, busRadio, retailRadio, topupRadio;
-    private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo;
+    private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo, editRemark;
     private EditText busNumber, busFrom, busTo, fareSgd;
     private Button submit;
     private static String transportationType = "MRT";
@@ -103,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static List<String> knownFareList_MrtMrt = null;
     private static List<String> ezLinkCardNumbers = null;
     private static List<String> ezLinkCardTypes = null;
+
+    private static ArrayList<String> remarkList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,12 +135,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         busFrom = findViewById(R.id.editBusStop1);
         busTo = findViewById(R.id.editBusStop2);
         fareSgd = findViewById(R.id.editFareSgd);
+        editRemark = findViewById(R.id.remark);
         submit = findViewById(R.id.buttonSubmit);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
         busTo.setVisibility(View.GONE);
         fareSgd.setVisibility(View.GONE);
+        editRemark.setVisibility(View.GONE);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
@@ -148,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busFrom.setVisibility(View.GONE);
                     busTo.setVisibility(View.GONE);
                     fareSgd.setVisibility(View.GONE);
+                    editRemark.setVisibility(View.GONE);
                     transportationType = "MRT";
                 } else if (busRadio.isChecked() == true) {
                     mrtFrom.setVisibility(View.GONE);
@@ -156,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busFrom.setVisibility(View.VISIBLE);
                     busTo.setVisibility(View.VISIBLE);
                     fareSgd.setVisibility(View.GONE);
+                    editRemark.setVisibility(View.GONE);
                     transportationType = "BUS";
                 } else if (retailRadio.isChecked() == true) {
                     mrtFrom.setVisibility(View.GONE);
@@ -164,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busFrom.setVisibility(View.GONE);
                     busTo.setVisibility(View.GONE);
                     fareSgd.setVisibility(View.VISIBLE);
+                    editRemark.setVisibility(View.VISIBLE);
                     transportationType = "RETAIL";
                 } else if (topupRadio.isChecked() == true) {
                     mrtFrom.setVisibility(View.GONE);
@@ -173,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busTo.setVisibility(View.GONE);
                     fareSgd.setVisibility(View.VISIBLE);
                     transportationType = "TOP UP";
+                    editRemark.setVisibility(View.VISIBLE);
                 } else {
                     //Do nothing here.
                 }
@@ -286,6 +295,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_KnownFareLookup", null).execute();
+            new MakeRequestTask(accountCredential, scriptId_MyBank, "getRemarkList", null).execute();
         }
     }
 
@@ -423,12 +433,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             functionParameters.add(busFrom.getText().toString());
             functionParameters.add(busTo.getText().toString());
         } else if (retailRadio.isChecked()) {
+            String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_Retail";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
-            //TODO
+            functionParameters.add(remark);
+            if (remarkList.indexOf(remark) < 0) {
+                remarkList.add(remark);
+                editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
+                List<Object> remarkToAdd = new ArrayList<>();
+                remarkToAdd.add(remark);
+                new MakeRequestTask(accountCredential, scriptId_MyBank, "addRemark", remarkToAdd).execute();
+            }
         } else if (topupRadio.isChecked()) {
+            String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_ManualTopUp";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
+            functionParameters.add(remark);
+            if (remarkList.indexOf(remark) < 0) {
+                remarkList.add(remark);
+                editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
+                List<Object> remarkToAdd = new ArrayList<>();
+                remarkToAdd.add(remark);
+                new MakeRequestTask(accountCredential, scriptId_MyBank, "addRemark", remarkToAdd).execute();
+            }
         } else {
             //Do nothing here.
         }
@@ -643,6 +670,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected void onPostExecute(List<String> output) {
             String[] titles, cardInfo, fareInfo;
             switch (functionName) {
+                case "addRemark":
+                    //Do nothing here.
+                    break;
+                case "getRemarkList":
+                    remarkList = (ArrayList<String>) output;
+                    editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
+                    initJobCount++;
+                    if (initJobCount >= 4) {
+                        progressDialog.dismiss();
+                    }
+                    break;
                 case "getInfo_ActiveEzLinkCards":
                     ezLinkCardNumbers = new ArrayList<>();
                     ezLinkCardTypes = new ArrayList<>();
@@ -669,7 +707,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
                     initJobCount++;
-                    if (initJobCount >= 3) {
+                    if (initJobCount >= 4) {
                         progressDialog.dismiss();
                     }
                     break;
@@ -679,7 +717,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mrtFrom.setAdapter(adapter);
                     mrtTo.setAdapter(adapter);
                     initJobCount++;
-                    if (initJobCount >= 3) {
+                    if (initJobCount >= 4) {
                         progressDialog.dismiss();//.hide();
                     }
                     break;
@@ -721,7 +759,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                     initJobCount++;
-                    if (initJobCount >= 3) {
+                    if (initJobCount >= 4) {
                         progressDialog.dismiss();//.hide();
                     }
                     break;
