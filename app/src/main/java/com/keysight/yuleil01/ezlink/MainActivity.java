@@ -661,7 +661,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
-            if (functionName.equals("getInfo_fActiveCards") ||
+            if (functionName.equals("getInfo_ActiveCards") ||
                     functionName.equals("getListOfRailStations") ||
                     functionName.equals("getInfo_KnownFareLookup") ||
                     functionName.equals("getRemarkList")) {
