@@ -214,14 +214,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.copyto_8657:
-                fareSgd.setText("");
-                fareSgd.setVisibility(View.GONE);
+                if (mrtRadio.isChecked() || busRadio.isChecked()) {
+                    if (fareSgd.isShown()) {
+                        fareSgd.setText("");
+                        fareSgd.setVisibility(View.GONE);
+                    }
+                }
                 ezlinkCardNumber.setText("1009622008118657");
                 getResultsFromApi();
                 break;
             case R.id.copyto_8910:
-                fareSgd.setText("");
-                fareSgd.setVisibility(View.GONE);
+                if (mrtRadio.isChecked() || busRadio.isChecked()) {
+                    if (fareSgd.isShown()) {
+                        fareSgd.setText("");
+                        fareSgd.setVisibility(View.GONE);
+                    }
+                }
                 ezlinkCardNumber.setText("8009150000708910");
                 getResultsFromApi();
                 break;
@@ -653,9 +661,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
-            if (functionName.equals("getInfo_fActiveCards") || functionName.equals("getListOfRailStations") || functionName.equals("getInfo_KnownFareLookup")) {
-                progressDialog.setMessage("Initializing data from the backend system ...");
+            if (functionName.equals("getInfo_fActiveCards") ||
+                    functionName.equals("getListOfRailStations") ||
+                    functionName.equals("getInfo_KnownFareLookup") ||
+                    functionName.equals("getRemarkList")) {
                 if (!progressDialog.isShowing()) {
+                    progressDialog.setMessage("Initializing data from the backend system ...");
                     progressDialog.show();
                     progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
                 }
