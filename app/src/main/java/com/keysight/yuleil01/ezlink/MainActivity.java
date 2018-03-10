@@ -665,8 +665,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     functionName.equals("getListOfRailStations") ||
                     functionName.equals("getInfo_KnownFareLookup") ||
                     functionName.equals("getRemarkList")) {
+                progressDialog.setMessage("Initializing data from the backend system ...");
                 if (!progressDialog.isShowing()) {
-                    progressDialog.setMessage("Initializing data from the backend system ...");
                     progressDialog.show();
                     progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
                 }
