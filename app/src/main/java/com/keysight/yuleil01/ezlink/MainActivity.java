@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = {
             "https://www.googleapis.com/auth/drive",
-            "https://www.googleapis.com/auth/spreadsheets"
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/script.external_request" //2018-06-09: added.
     };
 
     public static final String EZLINK_CARD_NUMBER = "EZLink Card Number";
@@ -597,7 +598,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
          * @return list of String folder names and their IDs
          * @throws IOException
          */
-        private List<String> getDataFromApi() throws IOException, GoogleAuthException {
+        private List<String> getDataFromApi() throws IOException, GoogleAuthException
+        {
             // Create an execution request object.
             ExecutionRequest request = new ExecutionRequest()
                     .setDevMode(Boolean.TRUE) //TODO: remove dev mode before release.
@@ -608,13 +610,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Operation op = mService.scripts().run(scriptId, request).execute();
 
             // Print results of request.
-            if (op.getError() != null) {
+            if (op.getError() != null)
+            {
                 throw new IOException(getScriptError(op));
             }
 
-            if (op.getResponse() != null && op.getResponse().get("result") != null) {
+            if (op.getResponse() != null && op.getResponse().get("result") != null)
+            {
                 return (List<String>) op.getResponse().get("result");
-            } else {
+            }
+            else
+            {
                 return null;
             }
         }
@@ -661,16 +667,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
-            if (functionName.equals("getInfo_ActiveCards") ||
+            if (functionName.equals("getInfo_ActiveEzLinkCards") ||
                     functionName.equals("getListOfRailStations") ||
                     functionName.equals("getInfo_KnownFareLookup") ||
-                    functionName.equals("getRemarkList")) {
+                    functionName.equals("getRemarkList"))
+            {
                 progressDialog.setMessage("Initializing data from the backend system ...");
-                if (!progressDialog.isShowing()) {
+                if (!progressDialog.isShowing())
+                {
                     progressDialog.show();
                     progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
                 }
-            } else {
+            }
+            else
+            {
                 progressDialog.setMessage("Performing EZLink transaction in the backend system ...");
                 progressDialog.show();
                 progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
