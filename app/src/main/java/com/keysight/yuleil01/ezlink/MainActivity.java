@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -94,8 +95,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String scriptId_EzLink = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG"; //ezlink
     private static final String scriptId_MyBank = "MoNdSxfXDH8wP_ODK4qZ9IBU9l98eQNnp";
 
-    private RadioGroup radioGroup;
-    private RadioButton mrtRadio, busRadio, retailRadio, topupRadio;
+    private RadioGroup radioGroup1, radioGroup2;
+    private RadioButton mrtRadio, busRadio, retailRadio, topupRadio, nowRadio, pastRadio;
+    private CheckBox prePeakCheckBox;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo, editRemark;
     private EditText busNumber, busFrom, busTo, fareSgd;
     private Button submit;
@@ -125,11 +127,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         ezlinkCardNumber = findViewById(R.id.editEZLinkCardNumber);
-        radioGroup = findViewById(R.id.selectMRTorBUS);
+        radioGroup1 = findViewById(R.id.selectMRTorBUS);
+        radioGroup2 = findViewById(R.id.selectNOWorPAST);
         mrtRadio = findViewById(R.id.radioButtonMRT);
         busRadio = findViewById(R.id.radioButtonBUS);
         retailRadio = findViewById(R.id.radioButtonRetail);
         topupRadio = findViewById(R.id.radioButtonTopUp);
+        nowRadio = findViewById(R.id.radioButtonNOW);
+        pastRadio = findViewById(R.id.radioButtonPAST);
+        prePeakCheckBox = findViewById(R.id.checkBoxPrePeak);
         mrtFrom = findViewById(R.id.editMRT1);
         mrtTo = findViewById(R.id.editMRT2);
         busNumber = findViewById(R.id.editBusNumber);
@@ -144,10 +150,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         busTo.setVisibility(View.GONE);
         fareSgd.setVisibility(View.GONE);
         editRemark.setVisibility(View.GONE);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        prePeakCheckBox.setVisibility(View.GONE);
+        radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
                 if (mrtRadio.isChecked() == true) {
+                    radioGroup2.setVisibility(View.VISIBLE);
                     mrtFrom.setVisibility(View.VISIBLE);
                     mrtTo.setVisibility(View.VISIBLE);
                     busNumber.setVisibility(View.GONE);
@@ -157,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.GONE);
                     transportationType = "MRT";
                 } else if (busRadio.isChecked() == true) {
+                    radioGroup2.setVisibility(View.VISIBLE);
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
                     busNumber.setVisibility(View.VISIBLE);
@@ -166,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.GONE);
                     transportationType = "BUS";
                 } else if (retailRadio.isChecked() == true) {
+                    radioGroup2.setVisibility(View.GONE);
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
                     busNumber.setVisibility(View.GONE);
@@ -175,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.VISIBLE);
                     transportationType = "RETAIL";
                 } else if (topupRadio.isChecked() == true) {
+                    radioGroup2.setVisibility(View.GONE);
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
                     busNumber.setVisibility(View.GONE);
@@ -185,6 +196,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.VISIBLE);
                 } else {
                     //Do nothing here.
+                }
+            }
+        });
+        radioGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (nowRadio.isChecked()) {
+                    prePeakCheckBox.setVisibility(View.GONE);
+                } else if (pastRadio.isChecked()) {
+                    prePeakCheckBox.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -237,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.sbw_yis:
                 ezlinkCardNumber.setText("1009622003582322");
                 mrtRadio.setChecked(Boolean.TRUE);
+                nowRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Sembawang");
                 mrtTo.setText("Yishun");
                 getResultsFromApi();
@@ -244,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.yis_sbw:
                 ezlinkCardNumber.setText("1009622003582322");
                 mrtRadio.setChecked(Boolean.TRUE);
+                nowRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Yishun");
                 mrtTo.setText("Sembawang");
                 getResultsFromApi();
@@ -253,12 +276,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (mrtRadio.isChecked()) {
                     mrtFrom.setText("");
                     mrtTo.setText("");
-                } else {
+                    fareSgd.setVisibility(View.GONE);
+                } else if (busRadio.isChecked()) {
                     busNumber.setText("");
                     busFrom.setText("");
                     busTo.setText("");
+                    fareSgd.setVisibility(View.GONE);
+                } else {
+                    fareSgd.setText("");
+                    editRemark.setText("");
                 }
-                fareSgd.setVisibility(View.GONE);
                 break;
             case R.id.init_data:
                 initializeDataFromApi();

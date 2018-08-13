@@ -81,6 +81,43 @@
                     android:text="TOP UP" />
             </RadioGroup>
 
+            <RadioGroup
+                android:id="@+id/selectNOWorPAST"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:checkedButton="@+id/radioButtonNOW"
+                android:orientation="horizontal"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/selectMRTorBUS">
+
+                <RadioButton
+                    android:id="@+id/radioButtonNOW"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="NOW" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonPAST"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="PAST" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxPrePeak"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Pre-Peak" />
+            </RadioGroup>
+
             <AutoCompleteTextView
                 android:id="@+id/editMRT1"
                 android:layout_width="match_parent"
@@ -95,7 +132,7 @@
                 android:inputType="textPersonName"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/selectMRTorBUS" />
+                app:layout_constraintTop_toBottomOf="@+id/selectNOWorPAST" />
 
             <AutoCompleteTextView
                 android:id="@+id/editMRT2"
