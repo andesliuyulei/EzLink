@@ -3,6 +3,7 @@ package com.keysight.yuleil01.ezlink;
 import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -29,6 +30,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -51,6 +53,7 @@ import com.google.api.services.script.model.ExecutionRequest;
 import com.google.api.services.script.model.Operation;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -59,6 +62,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -99,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RadioButton mrtRadio, busRadio, retailRadio, topupRadio, nowRadio, pastRadio;
     private CheckBox prePeakCheckBox;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo, editRemark;
-    private EditText busNumber, busFrom, busTo, fareSgd;
+    private EditText busNumber, busFrom, busTo, fareSgd, editDate;
     private Button submit;
     private static String transportationType = "MRT";
 
@@ -144,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fareSgd = findViewById(R.id.editFareSgd);
         editRemark = findViewById(R.id.remark);
         submit = findViewById(R.id.buttonSubmit);
+        editDate = findViewById(R.id.editDate);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
@@ -151,10 +156,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fareSgd.setVisibility(View.GONE);
         editRemark.setVisibility(View.GONE);
         prePeakCheckBox.setVisibility(View.GONE);
+        editDate.setVisibility(View.GONE);
         radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                if (mrtRadio.isChecked() == true) {
+                if (mrtRadio.isChecked() == true)
+                {
                     radioGroup2.setVisibility(View.VISIBLE);
                     mrtFrom.setVisibility(View.VISIBLE);
                     mrtTo.setVisibility(View.VISIBLE);
@@ -163,8 +170,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busTo.setVisibility(View.GONE);
                     fareSgd.setVisibility(View.GONE);
                     editRemark.setVisibility(View.GONE);
+                    if (nowRadio.isChecked())
+                    {
+                        editDate.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+                        editDate.setVisibility(View.VISIBLE);
+                    }
                     transportationType = "MRT";
-                } else if (busRadio.isChecked() == true) {
+                }
+                else if (busRadio.isChecked() == true)
+                {
                     radioGroup2.setVisibility(View.VISIBLE);
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
@@ -173,8 +190,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busTo.setVisibility(View.VISIBLE);
                     fareSgd.setVisibility(View.GONE);
                     editRemark.setVisibility(View.GONE);
+                    if (nowRadio.isChecked())
+                    {
+                        editDate.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+                        editDate.setVisibility(View.VISIBLE);
+                    }
                     transportationType = "BUS";
-                } else if (retailRadio.isChecked() == true) {
+                }
+                else if (retailRadio.isChecked() == true)
+                {
                     radioGroup2.setVisibility(View.GONE);
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
@@ -183,8 +210,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busTo.setVisibility(View.GONE);
                     fareSgd.setVisibility(View.VISIBLE);
                     editRemark.setVisibility(View.VISIBLE);
+                    editDate.setVisibility(View.VISIBLE);
                     transportationType = "RETAIL";
-                } else if (topupRadio.isChecked() == true) {
+                }
+                else if (topupRadio.isChecked() == true)
+                {
                     radioGroup2.setVisibility(View.GONE);
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
@@ -192,23 +222,67 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busFrom.setVisibility(View.GONE);
                     busTo.setVisibility(View.GONE);
                     fareSgd.setVisibility(View.VISIBLE);
-                    transportationType = "TOP UP";
                     editRemark.setVisibility(View.VISIBLE);
-                } else {
+                    editDate.setVisibility(View.VISIBLE);
+                    transportationType = "TOP UP";
+                }
+                else
+                {
                     //Do nothing here.
                 }
             }
         });
-        radioGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        radioGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (nowRadio.isChecked()) {
+            public void onCheckedChanged(RadioGroup group, int checkedId)
+            {
+                if (nowRadio.isChecked())
+                {
                     prePeakCheckBox.setVisibility(View.GONE);
-                } else if (pastRadio.isChecked()) {
+                    editDate.setVisibility(View.GONE);
+                }
+                else
+                {
                     prePeakCheckBox.setVisibility(View.VISIBLE);
+                    editDate.setVisibility(View.VISIBLE);
                 }
             }
         });
+
+        editDate.setText(
+                new SimpleDateFormat(
+                        "yyyy-MM-dd",
+                        Locale.getDefault()
+                ).format(Calendar.getInstance().getTime())
+        );//*
+        editDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // get current selected year, month and day.
+                String currentDate = editDate.getText().toString();
+                int mYear = Integer.parseInt(currentDate.substring(0,4)); // current year
+                int mMonth = Integer.parseInt(currentDate.substring(5,7)) - 1; // current month
+                int mDay = Integer.parseInt(currentDate.substring(8)); // current day
+                // date picker dialog
+                DatePickerDialog datePickerDialog = new DatePickerDialog(
+                        MainActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                // set year, month and day value in the edit text
+                                editDate.setText(
+                                        year +
+                                        (monthOfYear<9?"-0":"-") + (monthOfYear + 1) +
+                                        (dayOfMonth<10?"-0":"-") + dayOfMonth
+                                );
+                            }
+                        },
+                        mYear, mMonth, mDay
+                );
+                datePickerDialog.show();
+            }
+        });//*/
 
         // Initialize credentials and service object..
         accountCredential = GoogleAccountCredential.usingOAuth2(
@@ -389,43 +463,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             alert("Please enter 'EZLink Card Number'.");
             return;
         }
-        String transactionCardType = getEzlinkCardType(transactionCardNumber);
-
-        //2017-12-29: enabled.
-        Date now = new Date();
-        int day = now.getDay();
-        int hour = now.getHours();
-        int minute = now.getMinutes();
-        if (day >= 1 && day <= 5) {
-            if (hour < 7) {
-                transactionCardType = transactionCardType.concat("-pre-peak");
-            } else if (hour == 7 && minute < 45) {
-                transactionCardType = transactionCardType.concat("-pre-peak");
-            } else {
-                //do nothing here.
-            }
-        } else {
-            //do nothing here.
-        }//*/
-
-        /*//Requires API level 26.
-        DayOfWeek today = LocalDate.now().getDayOfWeek();
-        LocalTime now = LocalTime.now();
-        int hour = now.getHour();
-        int minute = now.getMinute();
-        if (today.equals(DayOfWeek.MONDAY) ||
-                today.equals(DayOfWeek.TUESDAY) ||
-                today.equals(DayOfWeek.WEDNESDAY) ||
-                today.equals(DayOfWeek.THURSDAY) ||
-                today.equals(DayOfWeek.FRIDAY)) {
-            if (hour < 7) {
-                transactionCardType = transactionCardType.concat("(-pre-peak)");
-            } else if (hour == 7 && minute < 45) {
-                transactionCardType = transactionCardType.concat("(-pre-peak)");
-            } else {
-                //do nothing here.
-            }
-        }//*/
 
         String functionName = "";
         List<Object> functionParameters = new ArrayList<>();
@@ -438,6 +475,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else if (mrtTo.getText().toString().equals("")) {
                 alert("Please enter 'MRT Station (To)'.");
                 return;
+            }
+
+            String transactionCardType = getEzlinkCardType(transactionCardNumber);
+
+            if (nowRadio.isChecked())
+            {
+                //2017-12-29: enabled.
+                Date now = new Date();
+                int day = now.getDay();
+                int hour = now.getHours();
+                int minute = now.getMinutes();
+                if (day >= 1 && day <= 5) {
+                    if (hour < 7) {
+                        transactionCardType = transactionCardType.concat("-pre-peak");
+                    } else if (hour == 7 && minute < 45) {
+                        transactionCardType = transactionCardType.concat("-pre-peak");
+                    } else {
+                        //do nothing here.
+                    }
+                } else {
+                    //do nothing here.
+                }//*/
+
+                /*/Requires API level 26.
+                DayOfWeek today = LocalDate.now().getDayOfWeek();
+                LocalTime now = LocalTime.now();
+                int hour = now.getHour();
+                int minute = now.getMinute();
+                if (today.equals(DayOfWeek.MONDAY) ||
+                        today.equals(DayOfWeek.TUESDAY) ||
+                        today.equals(DayOfWeek.WEDNESDAY) ||
+                        today.equals(DayOfWeek.THURSDAY) ||
+                        today.equals(DayOfWeek.FRIDAY)) {
+                    if (hour < 7) {
+                        transactionCardType = transactionCardType.concat("(-pre-peak)");
+                    } else if (hour == 7 && minute < 45) {
+                        transactionCardType = transactionCardType.concat("(-pre-peak)");
+                    } else {
+                        //do nothing here.
+                    }
+                }//*/
+            }
+            else if (prePeakCheckBox.isChecked())
+            {
+                transactionCardType = transactionCardType.concat("-pre-peak");
             }
 
             String mrt1 = mrtFrom.getText().toString();
@@ -462,6 +544,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 functionParameters.add(transactionCardType);
                 knownFareList_MrtMrt.add(mrt1 + "|" + mrt2 + "|" + transactionCardType);
                 knownFareList_MrtMrt.add(mrt2 + "|" + mrt1 + "|" + transactionCardType);
+            }
+
+            if (pastRadio.isChecked())
+            {
+                functionParameters.add(editDate.getText().toString());
             }
         } else if (busRadio.isChecked()) {
             functionName = "ezlinkTransaction_Bus";

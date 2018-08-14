@@ -118,6 +118,20 @@
                     android:text="Pre-Peak" />
             </RadioGroup>
 
+            <EditText
+                android:id="@+id/editDate"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:hint="Transaction Date"
+                android:inputType="date"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/selectNOWorPAST" />
+
             <AutoCompleteTextView
                 android:id="@+id/editMRT1"
                 android:layout_width="match_parent"
@@ -132,7 +146,7 @@
                 android:inputType="textPersonName"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/selectNOWorPAST" />
+                app:layout_constraintTop_toBottomOf="@+id/editDate" />
 
             <AutoCompleteTextView
                 android:id="@+id/editMRT2"
