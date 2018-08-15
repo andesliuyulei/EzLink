@@ -560,6 +560,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             functionName = "ezlinkTransaction_Retail";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
             functionParameters.add(remark);
+            functionParameters.add(editDate.getText().toString());
             if (remarkList.indexOf(remark) < 0) {
                 remarkList.add(remark);
                 editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
@@ -572,6 +573,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             functionName = "ezlinkTransaction_ManualTopUp";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
             functionParameters.add(remark);
+            functionParameters.add(editDate.getText().toString());
             if (remarkList.indexOf(remark) < 0) {
                 remarkList.add(remark);
                 editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
