@@ -512,6 +512,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             functionParameters.add(busNumber.getText().toString());
             functionParameters.add(busFrom.getText().toString());
             functionParameters.add(busTo.getText().toString());
+            functionParameters.add(editDate.getText().toString());
         } else if (retailRadio.isChecked()) {
             String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_Retail";
