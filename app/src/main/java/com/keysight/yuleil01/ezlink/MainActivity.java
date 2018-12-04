@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String[] SCOPES = {
             "https://www.googleapis.com/auth/drive",
             "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/script.external_request" //2018-06-09: added.
+            "https://www.googleapis.com/auth/script.external_request", //2018-06-09: added.
+            "https://www.googleapis.com/auth/documents" //2018-12-04: added.
     };
 
     public static final String EZLINK_CARD_NUMBER = "EZLink Card Number";
@@ -590,27 +591,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
     private void chooseAccount() {
-        if (EasyPermissions.hasPermissions(
-                this, Manifest.permission.GET_ACCOUNTS)) {
-            String accountName = getPreferences(Context.MODE_PRIVATE)
-                    .getString(PREF_ACCOUNT_NAME, null);
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS)) {
+            String accountName = getPreferences(Context.MODE_PRIVATE).getString(PREF_ACCOUNT_NAME, null);
             if (accountName != null) {
                 accountCredential.setSelectedAccountName(accountName);
-                //getResultsFromApi();
                 initializeDataFromApi();
             } else {
                 // Start a dialog from which the user can choose an account
-                startActivityForResult(
-                        accountCredential.newChooseAccountIntent(),
-                        REQUEST_ACCOUNT_PICKER);
+                startActivityForResult(accountCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
             }
         } else {
             // Request the GET_ACCOUNTS permission via a user dialog
-            EasyPermissions.requestPermissions(
-                    this,
-                    "This app needs to access your Google account (via Contacts).",
-                    REQUEST_PERMISSION_GET_ACCOUNTS,
-                    Manifest.permission.GET_ACCOUNTS);
+            EasyPermissions.requestPermissions(this, "This app needs to access your Google account (via Contacts).", REQUEST_PERMISSION_GET_ACCOUNTS, Manifest.permission.GET_ACCOUNTS);
         }
     }
 
