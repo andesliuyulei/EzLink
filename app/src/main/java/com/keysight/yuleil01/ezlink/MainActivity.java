@@ -270,6 +270,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.integrity_check:
+                integrityCheck();
+                break;
             case R.id.copyto_8657:
                 if (mrtRadio.isChecked() || busRadio.isChecked()) {
                     if (fareSgd.isShown()) {
@@ -352,6 +355,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
         AlertDialog alert11 = abuilder.create();
         alert11.show();
+    }
+
+    private void integrityCheck() {
+        new MakeRequestTask(accountCredential, scriptId_EzLink, "integrityCheck", null).execute();
     }
 
     private void initializeDataFromApi() {
@@ -745,6 +752,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
                 }
             }
+            else if (functionName.equals("integrityCheck"))
+            {
+                progressDialog.setMessage("Executing Integrity Check...");
+                progressDialog.show();
+                progressDialog.setCanceledOnTouchOutside(Boolean.FALSE);
+            }
             else
             {
                 progressDialog.setMessage("Performing EZLink transaction in the backend system ...");
@@ -757,6 +770,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected void onPostExecute(List<String> output) {
             String[] titles, cardInfo, fareInfo;
             switch (functionName) {
+                case "integrityCheck":
+                    progressDialog.dismiss();
+                    alert("Integrity Check finished successfully.");
+                    break;
                 case "addRemark":
                     //Do nothing here.
                     break;
