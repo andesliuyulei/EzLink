@@ -772,7 +772,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             switch (functionName) {
                 case "integrityCheck":
                     progressDialog.dismiss();
-                    alert("Integrity Check finished successfully.");
+                    String todayDate = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+                    if (output.get(0).equals(todayDate) &&
+                            output.get(1).equals("EzLink Cards") &&
+                            output.get(2).equals("DBS-POSB") &&
+                            output.get(3).equals("OCBC"))
+                    {
+                        alert("Integrity Check finished successfully.");
+                    }
+                    else
+                    {
+                        alert("Integrity Check finished, but data is incorrect.");
+                    }
                     break;
                 case "addRemark":
                     //Do nothing here.
