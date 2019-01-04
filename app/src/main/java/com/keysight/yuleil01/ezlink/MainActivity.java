@@ -273,14 +273,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.integrity_check:
                 integrityCheck();
                 break;
-            case R.id.copyto_8657:
+            case R.id.copyto_2294:
                 if (mrtRadio.isChecked() || busRadio.isChecked()) {
                     if (fareSgd.isShown()) {
                         fareSgd.setText("");
                         fareSgd.setVisibility(View.GONE);
                     }
                 }
-                ezlinkCardNumber.setText("1009622008118657");
+                ezlinkCardNumber.setText("1000170007072294");
                 getResultsFromApi();
                 break;
             case R.id.copyto_8910:
@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getResultsFromApi();
                 break;
             case R.id.sbw_yis:
-                ezlinkCardNumber.setText("1009622003582322");
+                ezlinkCardNumber.setText("4524192003400508");
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Sembawang");
                 mrtTo.setText("Yishun");
@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getResultsFromApi();
                 break;
             case R.id.yis_sbw:
-                ezlinkCardNumber.setText("1009622003582322");
+                ezlinkCardNumber.setText("4524192003400508");
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Yishun");
                 mrtTo.setText("Sembawang");

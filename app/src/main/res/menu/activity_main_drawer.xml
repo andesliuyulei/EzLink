@@ -19,13 +19,13 @@
         <menu>
             <item
                 android:id="@+id/sbw_yis"
-                android:title="MRT: Sembawang-Yishun (*2322)" />
+                android:title="MRT: Sembawang-Yishun (*0508)" />
             <item
                 android:id="@+id/yis_sbw"
-                android:title="MRT: Yishun-Sembawang (*2322)" />
+                android:title="MRT: Yishun-Sembawang (*0508)" />
             <item
-                android:id="@+id/copyto_8657"
-                android:title="Same for LI CHANG (*8657)" />
+                android:id="@+id/copyto_2294"
+                android:title="Same for LI CHANG (*2294)" />
             <item
                 android:id="@+id/copyto_8910"
                 android:title="Same for LIU XINTONG (*8910)" />
