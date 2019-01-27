@@ -160,7 +160,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/selectMRTorBUS" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/editBusStop1"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -169,13 +169,13 @@
                 android:layout_marginTop="16dp"
                 android:ems="10"
                 android:hint="@string/hint_bus_stop_1"
-                android:inputType="number"
+                android:inputType="textAutoComplete"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editBusNumber" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/editBusStop2"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -186,7 +186,7 @@
                 android:layout_marginTop="16dp"
                 android:ems="10"
                 android:hint="@string/hint_bus_stop_2"
-                android:inputType="number"
+                android:inputType="textAutoComplete"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
