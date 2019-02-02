@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static int initJobCount = 0;
     private static List<String> knownFareList_MrtMrt = null;
+    private static List<String> knownFareList_Bus = null;
     private static List<String> ezLinkCardNumbers = null;
     private static List<String> ezLinkCardTypes = null;
 
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busTo.setVisibility(View.VISIBLE);
                     fareSgd.setVisibility(View.GONE);
                     editRemark.setVisibility(View.GONE);
-                    prePeakCheckBox.setVisibility(View.VISIBLE);
+                    prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "BUS";
                 }
                 else if (retailRadio.isChecked() == true)
@@ -259,7 +260,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param ezLinkCardNumber
      * @return
      */
-    private String getEzlinkCardType(String ezLinkCardNumber) {
+    private String getEzlinkCardType(String ezLinkCardNumber)
+    {
         return ezLinkCardTypes.get(ezLinkCardNumbers.indexOf(ezLinkCardNumber));
     }
 
@@ -465,27 +467,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * of the preconditions are not satisfied, the app will prompt the user as
      * appropriate.
      */
-    private void getResultsFromApi() {
+    private void getResultsFromApi()
+    {
         String transactionCardNumber = ezlinkCardNumber.getText().toString();
-        if (transactionCardNumber.equals("")) {
+        if (transactionCardNumber.equals(""))
+        {
             alert("Please enter 'EZLink Card Number'.");
             return;
         }
+        String transactionCardType = getEzlinkCardType(transactionCardNumber);
 
         String functionName = "";
         List<Object> functionParameters = new ArrayList<>();
 
         functionParameters.add(transactionCardNumber);
-        if (mrtRadio.isChecked()) {
-            if (mrtFrom.getText().toString().equals("")) {
+        if (mrtRadio.isChecked())
+        {
+            if (mrtFrom.getText().toString().equals(""))
+            {
                 alert("Please enter 'MRT Station (From)'.");
                 return;
-            } else if (mrtTo.getText().toString().equals("")) {
+            }
+            else if (mrtTo.getText().toString().equals(""))
+            {
                 alert("Please enter 'MRT Station (To)'.");
                 return;
             }
-
-            String transactionCardType = getEzlinkCardType(transactionCardNumber);
 
             if (prePeakCheckBox.isChecked())
             {
@@ -496,16 +503,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String mrt2 = mrtTo.getText().toString();
             functionParameters.add(mrt1);
             functionParameters.add(mrt2);
-            if (knownFareList_MrtMrt.indexOf(mrt1 + "|" + mrt2 + "|" + transactionCardType) >= 0) {
+            if (knownFareList_MrtMrt.indexOf(mrt1 + "|" + mrt2 + "|" + transactionCardType) >= 0)
+            {
                 functionName = "ezlinkTransaction_MrtMrt";
                 functionParameters.add(transactionCardType);
-            } else {
-                if (!fareSgd.isShown()) {
+            }
+            else
+            {
+                if (!fareSgd.isShown())
+                {
                     alert("The fare (" + mrt1 + "-" + mrt2 + "-" + transactionCardType + ") is unknown. Please enter 'Fare (SGD)'.");
                     fareSgd.setText("");
                     fareSgd.setVisibility(View.VISIBLE);
                     return;
-                } else if (fareSgd.getText().toString().equals("")) {
+                }
+                else if (fareSgd.getText().toString().equals(""))
+                {
                     alert("Please enter 'Fare (SGD)'.");
                     return;
                 }
@@ -516,11 +529,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 knownFareList_MrtMrt.add(mrt2 + "|" + mrt1 + "|" + transactionCardType);
             }
             functionParameters.add(editDate.getText().toString());
-        } else if (busRadio.isChecked()) {
-            functionName = "ezlinkTransaction_Bus";
-            functionParameters.add(busNumber.getText().toString());
-            functionParameters.add(busFrom.getText().toString());
-            functionParameters.add(busTo.getText().toString());
+        }
+        else if (busRadio.isChecked())
+        {
+            String bus0 = busNumber.getText().toString();
+            String bus1 = busFrom.getText().toString();
+            String bus2 = busTo.getText().toString();
+            if (bus0.equals(""))
+            {
+                alert("Please enter 'Bus Number'.");
+                return;
+            }
+            else if (bus1.equals(""))
+            {
+                alert("Please enter 'Bus Stop (From)'.");
+                return;
+            }
+            else if (bus2.equals(""))
+            {
+                alert("Please enter 'Bus Stop (To)'.");
+                return;
+            }
+            functionParameters.add(bus0);
+            functionParameters.add(bus1);
+            functionParameters.add(bus2);
+            if (knownFareList_Bus.indexOf("BUS " + bus0 + "|" + bus1 + "|" + bus2 + "|" + transactionCardType) >= 0)
+            {
+                functionName = "ezlinkTransaction_Bus";
+            }
+            else
+            {
+                if (!fareSgd.isShown())
+                {
+                    alert("The fare (" + bus0 + "-" + bus1 + "-" + bus2 + "-" + transactionCardType + ") is unknown. Please enter 'Fare (SGD)'.");
+                    fareSgd.setText("");
+                    fareSgd.setVisibility(View.VISIBLE);
+                    return;
+                }
+                else if (fareSgd.getText().toString().equals(""))
+                {
+                    alert("Please enter 'Fare (SGD)'.");
+                    return;
+                }
+                functionName = "ezlinkTransaction_Bus_NewFare";
+                functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
+                knownFareList_MrtMrt.add("BUS " + bus0 + "|" + bus1 + "|" + bus2 + "|" + transactionCardType);
+            }
+
             functionParameters.add(editDate.getText().toString());
         } else if (retailRadio.isChecked()) {
             String remark = editRemark.getText().toString();
@@ -877,11 +932,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
 
-                    for (int i=1; i<output.size(); i++) {
+                    for (int i=1; i<output.size(); i++)
+                    {
                         fareInfo = output.get(i).split("\\|");
-                        if (fareInfo[indexof_Route].equals("MRT-MRT")) {
+                        if (fareInfo[indexof_Route].equals("MRT-MRT"))
+                        {
                             knownFareList_MrtMrt.add(fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_FareType]);
                             knownFareList_MrtMrt.add(fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_FareType]);
+                        }
+                        else if (fareInfo[indexof_Route].substring(0, 3).equals("BUS"))
+                        {
+                            knownFareList_Bus.add(fareInfo[indexof_Route] + "|" + fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_FareType]);
                         }
                     }
 
