@@ -905,6 +905,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case "getInfo_KnownFareLookup":
                     knownFareList_MrtMrt = new ArrayList<>();
+                    knownFareList_Bus = new ArrayList<>();
                     titles = output.get(0).split("\\|");
                     int indexof_Route = 0;
                     int indexof_Mrt1 = 0;
