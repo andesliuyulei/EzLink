@@ -573,7 +573,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 functionName = "ezlinkTransaction_Bus_NewFare";
                 functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
-                knownFareList_MrtMrt.add("BUS " + bus0 + "|" + bus1 + "|" + bus2 + "|" + transactionCardType);
+                knownFareList_Bus.add("BUS " + bus0 + "|" + bus1 + "|" + bus2 + "|" + transactionCardType);
             }
 
             functionParameters.add(editDate.getText().toString());
