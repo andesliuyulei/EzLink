@@ -940,7 +940,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             knownFareList_MrtMrt.add(fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_FareType]);
                             knownFareList_MrtMrt.add(fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_FareType]);
                         }
-                        else if (fareInfo[indexof_Route].substring(0, 3).equals("BUS"))
+                        else if (fareInfo[indexof_Route].startsWith("BUS "))
                         {
                             knownFareList_Bus.add(fareInfo[indexof_Route] + "|" + fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_FareType]);
                         }
