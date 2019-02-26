@@ -90,8 +90,8 @@ public class PerformEZLinkTransaction extends AppCompatActivity {
         } else {
             //Do nothing here.
         }
-        //((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
-        findViewById(R.id.distanceTraveled).setVisibility(View.GONE);
+        ((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
+        //findViewById(R.id.distanceTraveled).setVisibility(View.GONE);
         ((TextView) findViewById(R.id.fareIncurred)).setText("Fare (SGD): " + intent.getStringExtra(MainActivity.EZLINK_RESULT2));
         ((TextView) findViewById(R.id.balanceBefore)).setText("Balance before (SGD): " + intent.getStringExtra(MainActivity.EZLINK_RESULT3));
         ((TextView) findViewById(R.id.balanceAfter)).setText("Balance after (SGD): " + intent.getStringExtra(MainActivity.EZLINK_RESULT4));
