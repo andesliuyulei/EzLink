@@ -112,8 +112,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String transportationType = "MRT";
 
     private static int initJobCount = 0;
-    private static List<String> knownFareList_MrtMrt = null;
-    private static List<String> knownFareList_Bus = null;
+    private static int initJobTotal = 0;
+    //private static List<String> knownFareList_MrtMrt = null;
+    //private static List<String> knownFareList_Bus = null;
     private static List<String> ezLinkCardNumbers = null;
     private static List<String> ezLinkCardTypes = null;
     private static List<String> listofKnownDistance = null;
@@ -379,10 +380,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             alert("No network connection available.");
         } else {
             initJobCount = 0;
+            initJobTotal = 5;
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListofBusStops", null).execute();
-            new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_KnownFareLookup", null).execute();
+            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_KnownFareLookup", null).execute();
             new MakeRequestTask(accountCredential, scriptId_MyBank, "getRemarkList", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_DistanceTable", null).execute();
         }
@@ -591,9 +593,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 alert("Please enter 'Bus Stop (To)'.");
                 return;
             }
+
+            functionParameters.add(editDate.getText().toString());
+
             functionParameters.add(bus0);
             functionParameters.add(bus1);
             functionParameters.add(bus2);
+
+            if (listofKnownDistance.indexOf("BUS " + bus0 + "|" + bus1 + "|" + bus2) >= 0)
+            {
+                functionName = "ezlinkTransaction_BusOnly";
+            }
+            else
+            {
+                if (!fareSgd.isShown())
+                {
+                    alert("The distance (BUS " + bus0 + ": " + bus1 + "-" + bus2 + ") is unknown. Please enter 'Distance (km)'.");
+                    fareSgd.setText("");
+                    fareSgd.setHint("Distance (km)");
+                    fareSgd.setVisibility(View.VISIBLE);
+                    return;
+                }
+                else if (fareSgd.getText().toString().equals(""))
+                {
+                    alert("Please enter 'Distance (km)'.");
+                    return;
+                }
+                functionName = "ezlinkTransaction_Bus_NewDistance";
+                functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
+                listofKnownDistance.add("BUS " + bus0 + "|" + bus1 + "|" + bus2);
+            }
+
+            /*//
             if (knownFareList_Bus.indexOf("BUS " + bus0 + "|" + bus1 + "|" + bus2 + "|" + transactionCardType) >= 0)
             {
                 functionName = "ezlinkTransaction_Bus";
@@ -616,8 +647,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
                 knownFareList_Bus.add("BUS " + bus0 + "|" + bus1 + "|" + bus2 + "|" + transactionCardType);
             }
-
             functionParameters.add(editDate.getText().toString());
+            //*/
         } else if (retailRadio.isChecked()) {
             String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_Retail";
@@ -840,7 +871,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (functionName.equals("getInfo_ActiveEzLinkCards") ||
                     functionName.equals("getListOfRailStations") ||
                     functionName.equals("getListofBusStops") ||
-                    functionName.equals("getInfo_KnownFareLookup") ||
+                    //functionName.equals("getInfo_KnownFareLookup") ||
                     functionName.equals("getInfo_DistanceTable") ||
                     functionName.equals("getRemarkList"))
             {
@@ -891,7 +922,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     remarkList = (ArrayList<String>) output;
                     editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
                     initJobCount++;
-                    if (initJobCount >= 6) {
+                    if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();
                     }
                     break;
@@ -921,7 +952,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
                     initJobCount++;
-                    if (initJobCount >= 6) {
+                    if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();
                     }
                     break;
@@ -931,7 +962,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mrtFrom.setAdapter(railStations);
                     mrtTo.setAdapter(railStations);
                     initJobCount++;
-                    if (initJobCount >= 6) {
+                    if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();//.hide();
                     }
                     break;
@@ -941,7 +972,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     busFrom.setAdapter(busStops);
                     busTo.setAdapter(busStops);
                     initJobCount++;
-                    if (initJobCount >= 6) {
+                    if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();//.hide();
                     }
                     break;
@@ -960,11 +991,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
                     initJobCount++;
-                    if (initJobCount >= 6)
+                    if (initJobCount >= initJobTotal)
                     {
                         progressDialog.dismiss();
                     }
                     break;
+                /*//
                 case "getInfo_KnownFareLookup":
                     knownFareList_MrtMrt = new ArrayList<>();
                     knownFareList_Bus = new ArrayList<>();
@@ -1010,10 +1042,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                     initJobCount++;
-                    if (initJobCount >= 6) {
+                    if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();//.hide();
                     }
-                    break;
+                    break;//*/
                 default:
                     progressDialog.dismiss();
                     displayResult(output);
