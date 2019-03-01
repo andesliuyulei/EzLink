@@ -936,22 +936,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     titles = output.get(0).split("\\|");
                     int indexof_EzLinkCardNumber = 0;
                     int indexof_EzLinkCardType = 0;
+                    int indexof_EzLinkCardOwner = 0;
 
                     //the first row are the titles.
-                    for (int i=0; i<titles.length; i++) {
-                        if (titles[i].equals("Card Number")) {
+                    for (int i=0; i<titles.length; i++)
+                    {
+                        if (titles[i].equals("Card Number"))
+                        {
                             indexof_EzLinkCardNumber = i;
-                        } else if (titles[i].equals("Card Type")) {
+                        }
+                        else if (titles[i].equals("Card Type"))
+                        {
                             indexof_EzLinkCardType = i;
-                        } else {
-                            //do nothing here.
+                        }
+                        else if (titles[i].equals("Owner"))
+                        {
+                            indexof_EzLinkCardOwner = i;
                         }
                     }
 
-                    for (int i=1; i<output.size(); i++) {
+                    for (int i=1; i<output.size(); i++)
+                    {
                         cardInfo = output.get(i).split("\\|");
                         ezLinkCardNumbers.add(cardInfo[indexof_EzLinkCardNumber]);
                         ezLinkCardTypes.add(cardInfo[indexof_EzLinkCardType]);
+                        switch (cardInfo[indexof_EzLinkCardOwner])
+                        {
+                            case "LIU YULEI":
+                                cardof_lyl = cardInfo[indexof_EzLinkCardNumber];
+                                break;
+                            case "LI CHANG":
+                                cardof_lc = cardInfo[indexof_EzLinkCardNumber];
+                                break;
+                            case "LIU XINTONG":
+                                cardof_lxt = cardInfo[indexof_EzLinkCardNumber];
+                                break;
+                            default:
+                                //do nothing.
+                                break;
+                        }
                     }
 
                     ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
