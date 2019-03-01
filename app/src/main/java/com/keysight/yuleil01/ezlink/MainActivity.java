@@ -120,6 +120,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static List<String> listofKnownDistance = null;
     private static ArrayList<String> remarkList = null;
 
+    private static String cardof_lyl = "4524192003400508";
+    private static String cardof_lc = "1000170007072294";
+    private static String cardof_lxt = "8009150000708910";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -283,28 +287,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.integrity_check:
                 integrityCheck();
                 break;
-            case R.id.copyto_2294:
+            case R.id.samefor_lc:
                 if (mrtRadio.isChecked() || busRadio.isChecked()) {
                     if (fareSgd.isShown()) {
                         fareSgd.setText("");
                         fareSgd.setVisibility(View.GONE);
                     }
                 }
-                ezlinkCardNumber.setText("1000170007072294");
+                ezlinkCardNumber.setText(cardof_lc);
                 getResultsFromApi();
                 break;
-            case R.id.copyto_8910:
+            case R.id.samefor_lxt:
                 if (mrtRadio.isChecked() || busRadio.isChecked()) {
                     if (fareSgd.isShown()) {
                         fareSgd.setText("");
                         fareSgd.setVisibility(View.GONE);
                     }
                 }
-                ezlinkCardNumber.setText("8009150000708910");
+                ezlinkCardNumber.setText(cardof_lxt);
                 getResultsFromApi();
                 break;
             case R.id.sbw_yis:
-                ezlinkCardNumber.setText("4524192003400508");
+                ezlinkCardNumber.setText(cardof_lyl);
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Sembawang");
                 mrtTo.setText("Yishun");
@@ -312,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getResultsFromApi();
                 break;
             case R.id.yis_sbw:
-                ezlinkCardNumber.setText("4524192003400508");
+                ezlinkCardNumber.setText(cardof_lyl);
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Yishun");
                 mrtTo.setText("Sembawang");
