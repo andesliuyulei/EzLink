@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String TRANSPORTATION_TYPE = "MRT or BUS";
     public static final String MRT_STATION_FROM = "MRT Station (From)";
     public static final String MRT_STATION_TO = "MRT Station (To)";
+    public static final String Pre_Peak = "";
     public static final String BUS_NUMBER = "Bus Number";
     public static final String BUS_STOP_FROM = "Bus Stop (From)";
     public static final String BUS_STOP_TO = "Bus Stop (To)";
@@ -162,7 +163,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         busTo.setVisibility(View.GONE);
         fareSgd.setVisibility(View.GONE);
         editRemark.setVisibility(View.GONE);
-        radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
                 if (mrtRadio.isChecked() == true)
@@ -279,17 +281,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item)
+    {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id) {
+        switch (id)
+        {
             case R.id.integrity_check:
                 integrityCheck();
                 break;
             case R.id.samefor_lc:
-                if (mrtRadio.isChecked() || busRadio.isChecked()) {
-                    if (fareSgd.isShown()) {
+                if (mrtRadio.isChecked() || busRadio.isChecked())
+                {
+                    if (fareSgd.isShown())
+                    {
                         fareSgd.setText("");
                         fareSgd.setVisibility(View.GONE);
                     }
@@ -298,8 +304,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getResultsFromApi();
                 break;
             case R.id.samefor_lxt:
-                if (mrtRadio.isChecked() || busRadio.isChecked()) {
-                    if (fareSgd.isShown()) {
+                if (mrtRadio.isChecked() || busRadio.isChecked())
+                {
+                    if (fareSgd.isShown())
+                    {
                         fareSgd.setText("");
                         fareSgd.setVisibility(View.GONE);
                     }
@@ -325,16 +333,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.rst_form:
                 ezlinkCardNumber.setText("");
-                if (mrtRadio.isChecked()) {
+                if (mrtRadio.isChecked())
+                {
                     mrtFrom.setText("");
                     mrtTo.setText("");
                     fareSgd.setVisibility(View.GONE);
-                } else if (busRadio.isChecked()) {
+                }
+                else if (busRadio.isChecked())
+                {
                     busNumber.setText("");
                     busFrom.setText("");
                     busTo.setText("");
                     fareSgd.setVisibility(View.GONE);
-                } else {
+                }
+                else
+                {
                     fareSgd.setText("");
                     editRemark.setText("");
                 }
@@ -356,7 +369,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @description //TODO need to revisit this function.
      * @param msg
      */
-    private void alert(String msg) {
+    private void alert(String msg)
+    {
         AlertDialog.Builder abuilder = new AlertDialog.Builder(this);
         abuilder.setMessage(msg);
         abuilder.setCancelable(Boolean.FALSE);
@@ -371,18 +385,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         alert11.show();
     }
 
-    private void integrityCheck() {
+    private void integrityCheck()
+    {
         new MakeRequestTask(accountCredential, scriptId_EzLink, "integrityCheck", null).execute();
     }
 
-    private void initializeDataFromApi() {
-        if (! isGooglePlayServicesAvailable()) {
+    private void initializeDataFromApi()
+    {
+        if (! isGooglePlayServicesAvailable())
+        {
             acquireGooglePlayServices();
-        } else if (accountCredential.getSelectedAccountName() == null) {
+        }
+        else if (accountCredential.getSelectedAccountName() == null)
+        {
             chooseAccount();
-        } else if (! isDeviceOnline()) {
+        }
+        else if (! isDeviceOnline())
+        {
             alert("No network connection available.");
-        } else {
+        }
+        else
+        {
             initJobCount = 0;
             initJobTotal = 5;
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
@@ -395,22 +418,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /** Called when the user taps the Submit Transaction button */
-    public void submitTransaction(View view) {
+    public void submitTransaction(View view)
+    {
         submit.setEnabled(Boolean.FALSE);
         getResultsFromApi();
         submit.setEnabled(Boolean.TRUE);
     }
 
-    private void displayResult(List<String> output) {
+    private void displayResult(List<String> output)
+    {
         Intent intent = new Intent(this, PerformEZLinkTransaction.class);
         intent.putExtra(EZLINK_CARD_NUMBER, ezlinkCardNumber.getText().toString());
         intent.putExtra(TRANSPORTATION_TYPE, transportationType);
         intent.putExtra(MRT_STATION_FROM, mrtFrom.getText().toString());
         intent.putExtra(MRT_STATION_TO, mrtTo.getText().toString());
+        if (prePeakCheckBox.isChecked())
+        {
+            intent.putExtra(Pre_Peak, "Pre-Peak");
+        }
+        else
+        {
+            intent.putExtra(Pre_Peak, "");
+        }
         intent.putExtra(BUS_NUMBER, busNumber.getText().toString());
         intent.putExtra(BUS_STOP_FROM, busFrom.getText().toString());
         intent.putExtra(BUS_STOP_TO, busTo.getText().toString());
-        if (output != null) {
+        if (output != null)
+        {
             intent.putExtra(EZLINK_RESULT1, output.toArray()[0].toString());
             intent.putExtra(EZLINK_RESULT2, output.toArray()[1].toString());
             intent.putExtra(EZLINK_RESULT3, output.toArray()[2].toString());
