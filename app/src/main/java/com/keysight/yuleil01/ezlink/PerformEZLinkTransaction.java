@@ -71,6 +71,7 @@ public class PerformEZLinkTransaction extends AppCompatActivity {
             busStopTo.setVisibility(View.GONE);
             ((TextView) mrtStationFrom).setText("SMRT Station (From): " + intent.getStringExtra(MainActivity.MRT_STATION_FROM));
             ((TextView) mrtStationTo).setText("SMRT Station (To): " + intent.getStringExtra(MainActivity.MRT_STATION_TO));
+            ((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
         }
         else if (transportationType.equals("BUS"))
         {
@@ -79,6 +80,7 @@ public class PerformEZLinkTransaction extends AppCompatActivity {
             ((TextView) busNumber).setText("Bus Number: " + intent.getStringExtra(MainActivity.BUS_NUMBER));
             ((TextView) busStopFrom).setText("Bus Stop (From): " + intent.getStringExtra(MainActivity.BUS_STOP_FROM));
             ((TextView) busStopTo).setText("Bus Stop (To): " + intent.getStringExtra(MainActivity.BUS_STOP_TO));
+            ((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
         }
         else if (transportationType.equals("RETAIL"))
         {
@@ -87,6 +89,7 @@ public class PerformEZLinkTransaction extends AppCompatActivity {
             busNumber.setVisibility(View.GONE);
             busStopFrom.setVisibility(View.GONE);
             busStopTo.setVisibility(View.GONE);
+            findViewById(R.id.distanceTraveled).setVisibility(View.GONE);
         }
         else if (transportationType.equals("TOP UP"))
         {
@@ -95,14 +98,13 @@ public class PerformEZLinkTransaction extends AppCompatActivity {
             busNumber.setVisibility(View.GONE);
             busStopFrom.setVisibility(View.GONE);
             busStopTo.setVisibility(View.GONE);
+            findViewById(R.id.distanceTraveled).setVisibility(View.GONE);
         }
         else
         {
             //Do nothing here.
         }
 
-        ((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
-        //findViewById(R.id.distanceTraveled).setVisibility(View.GONE);
         String prepeak = intent.getStringExtra(MainActivity.Pre_Peak);
         if (prepeak.equals("Pre-Peak"))
         {
