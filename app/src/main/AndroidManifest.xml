@@ -26,6 +26,9 @@
         <activity android:name=".PerformEZLinkTransaction"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity android:name=".DisplayRecyclerView"
+            android:parentActivityName=".MainActivity">
+        </activity>
     </application>
 
 </manifest>
