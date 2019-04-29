@@ -5,8 +5,6 @@ import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,26 +14,23 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -51,27 +46,20 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.script.model.ExecutionRequest;
 import com.google.api.services.script.model.Operation;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+{
     static GoogleAccountCredential accountCredential;
     ProgressDialog progressDialog;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -101,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // ID of the script to call. Acquire this from the Apps Script editor,
     // under Publish > Deploy as API executable.
-    private static final String scriptId_EzLink = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG"; //ezlink
+    private static final String scriptId_EzLink = "M3xs1SNwyea50RwmMHfYiXkw9ezPKz0cG";
     private static final String scriptId_MyBank = "MoNdSxfXDH8wP_ODK4qZ9IBU9l98eQNnp";
 
     private RadioGroup radioGroup1;
@@ -114,8 +102,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static int initJobCount = 0;
     private static int initJobTotal = 0;
-    //private static List<String> knownFareList_MrtMrt = null;
-    //private static List<String> knownFareList_Bus = null;
     private static List<String> ezLinkCardNumbers = null;
     private static List<String> ezLinkCardTypes = null;
     private static List<String> listofKnownDistance = null;
@@ -126,15 +112,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String cardof_lxt = "8009150000708910";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -166,7 +152,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         radioGroup1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId)
+            {
                 if (mrtRadio.isChecked() == true)
                 {
                     mrtFrom.setVisibility(View.VISIBLE);
@@ -226,47 +213,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        editDate.setText(
-                new SimpleDateFormat(
-                        "yyyy-MM-dd",
-                        Locale.getDefault()
-                ).format(Calendar.getInstance().getTime())
-        );//*
-        editDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // get current selected year, month and day.
-                String currentDate = editDate.getText().toString();
-                int mYear = Integer.parseInt(currentDate.substring(0,4)); // current year
-                int mMonth = Integer.parseInt(currentDate.substring(5,7)) - 1; // current month
-                int mDay = Integer.parseInt(currentDate.substring(8)); // current day
-                // date picker dialog
-                DatePickerDialog datePickerDialog = new DatePickerDialog(
-                        MainActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                // set year, month and day value in the edit text
-                                editDate.setText(
-                                        year +
-                                        (monthOfYear<9?"-0":"-") + (monthOfYear + 1) +
-                                        (dayOfMonth<10?"-0":"-") + dayOfMonth
-                                );
-                            }
-                        },
-                        mYear, mMonth, mDay
-                );
-                datePickerDialog.show();
-            }
-        });//*/
+        editDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime()));
+
+        editDate.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        // get current selected year, month and day.
+                        String currentDate = editDate.getText().toString();
+                        int mYear = Integer.parseInt(currentDate.substring(0,4)); // current year
+                        int mMonth = Integer.parseInt(currentDate.substring(5,7)) - 1; // current month
+                        int mDay = Integer.parseInt(currentDate.substring(8)); // current day
+
+                        // date picker dialog
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
+                                new DatePickerDialog.OnDateSetListener()
+                                {
+                                    @Override
+                                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+                                    {
+                                        // set year, month and day value in the edit text
+                                        editDate.setText(year + (monthOfYear<9?"-0":"-") + (monthOfYear + 1) + (dayOfMonth<10?"-0":"-") + dayOfMonth);
+                                    }
+                                },
+                                mYear, mMonth, mDay);
+
+                        datePickerDialog.show();
+                    }
+                });
 
         // Initialize credentials and service object..
-        accountCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
+        accountCredential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(SCOPES)).setBackOff(new ExponentialBackOff());
 
         progressDialog = new ProgressDialog(this);
-        initializeDataFromApi();
+        //initializeDataFromApi();
     }
 
     /**
@@ -279,7 +261,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return ezLinkCardTypes.get(ezLinkCardNumbers.indexOf(ezLinkCardNumber));
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item)
     {
@@ -355,6 +336,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.init_data:
                 initializeDataFromApi();
                 break;
+            case R.id.recycler_view:
+                displayRecyclerView();
+                break;
             default:
                 //do nothing here!
                 break;
@@ -417,12 +401,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    /** Called when the user taps the Submit Transaction button */
+    /**
+     * Description: Called when the user taps the Submit Transaction button
+     */
     public void submitTransaction(View view)
     {
         submit.setEnabled(Boolean.FALSE);
         getResultsFromApi();
         submit.setEnabled(Boolean.TRUE);
+    }
+
+    private void displayRecyclerView()
+    {
+        Intent intent = new Intent(this, DisplayRecyclerView.class);
+        startActivity(intent);
     }
 
     private void displayResult(List<String> output)
@@ -730,7 +722,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @return true if Google Play Services is available and up to
      *     date on this device; false otherwise.
      */
-    private boolean isGooglePlayServicesAvailable() {
+    private boolean isGooglePlayServicesAvailable()
+    {
         GoogleApiAvailability apiAvailability =
                 GoogleApiAvailability.getInstance();
         final int connectionStatusCode =
