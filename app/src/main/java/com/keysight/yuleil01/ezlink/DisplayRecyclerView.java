@@ -35,5 +35,6 @@ public class DisplayRecyclerView extends AppCompatActivity
                 adapter.setCards(cards);
             }
         });
+        //mCardViewModel.insert(new Card("abcdefg"));
     }
 }

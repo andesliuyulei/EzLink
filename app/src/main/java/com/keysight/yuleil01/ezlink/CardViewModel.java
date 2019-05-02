@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CardViewModel extends AndroidViewModel
@@ -27,5 +28,10 @@ public class CardViewModel extends AndroidViewModel
     public void insert(Card card)
     {
         mRepository.insert(card);
+    }
+
+    public void deleteAllCards()
+    {
+        mRepository.deleteAllCards();
     }
 }

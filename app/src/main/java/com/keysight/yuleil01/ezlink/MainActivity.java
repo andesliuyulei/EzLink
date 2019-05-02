@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -110,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String cardof_lyl = "4524192003400508";
     private static String cardof_lc = "1000170007072294";
     private static String cardof_lxt = "8009150000708910";
+
+    private CardViewModel mCardViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -249,6 +254,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         progressDialog = new ProgressDialog(this);
         //initializeDataFromApi();
+
+        mCardViewModel = ViewModelProviders.of(this).get(CardViewModel.class);
+        mCardViewModel.getAllCards().observe(this, new Observer<List<Card>>()
+        {
+            @Override
+            public void onChanged(@Nullable final List<Card> cards)
+            {
+                if (ezLinkCardNumbers == null)
+                {
+                    ezLinkCardNumbers = new ArrayList<>();
+                }
+                else
+                {
+                    ezLinkCardNumbers.clear();
+                }
+                for (Card card : cards)
+                {
+                    ezLinkCardNumbers.add(card.getCardNumber());
+                }
+                ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
+            }
+        });
     }
 
     /**
@@ -390,12 +417,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else
         {
+            mCardViewModel.deleteAllCards();
             initJobCount = 0;
             initJobTotal = 5;
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getListofBusStops", null).execute();
-            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_KnownFareLookup", null).execute();
             new MakeRequestTask(accountCredential, scriptId_MyBank, "getRemarkList", null).execute();
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_DistanceTable", null).execute();
         }
@@ -413,6 +440,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void displayRecyclerView()
     {
+        /*//
+        mCardViewModel.deleteAllCards();
+        mCardViewModel.insert(new Card("testing 1"));
+        mCardViewModel.insert(new Card("testing 2"));
+        mCardViewModel.insert(new Card("testing 3"));
+        //*/
         Intent intent = new Intent(this, DisplayRecyclerView.class);
         startActivity(intent);
     }
@@ -986,6 +1019,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     {
                         cardInfo = output.get(i).split("\\|");
                         ezLinkCardNumbers.add(cardInfo[indexof_EzLinkCardNumber]);
+                        mCardViewModel.insert(new Card(cardInfo[indexof_EzLinkCardNumber]));
                         ezLinkCardTypes.add(cardInfo[indexof_EzLinkCardType]);
                         switch (cardInfo[indexof_EzLinkCardOwner])
                         {
