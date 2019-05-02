@@ -548,7 +548,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             alert("Please enter 'EZLink Card Number'.");
             return;
         }
-        String transactionCardType = getEzlinkCardType(transactionCardNumber);
+        //String transactionCardType = getEzlinkCardType(transactionCardNumber);
 
         String functionName = "";
         List<Object> functionParameters = new ArrayList<>();
@@ -570,7 +570,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (prePeakCheckBox.isChecked())
             {
-                transactionCardType = transactionCardType.concat("-pre-peak");
+                //transactionCardType = transactionCardType.concat("-pre-peak");
                 prepeak = true;
             }
 
