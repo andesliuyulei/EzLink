@@ -13,9 +13,13 @@ public class Card
     @ColumnInfo(name = "card_number")
     private String cardNumber;
 
+    @ColumnInfo(name = "card_owner")
+    private String cardOwner;
+
     public Card(@NonNull String cardNumber)
     {
         this.cardNumber = cardNumber;
+        this.cardOwner = "";
     }
 
     public String getCardNumber()
@@ -23,9 +27,19 @@ public class Card
         return this.cardNumber;
     }
 
+    public String getCardOwner()
+    {
+        return cardOwner;
+    }
+
     public void setCardNumber(String cardNumber)
     {
         this.cardNumber = cardNumber;
+    }
+
+    public void setCardOwner(String cardOwner)
+    {
+        this.cardOwner = cardOwner;
     }
 }
 

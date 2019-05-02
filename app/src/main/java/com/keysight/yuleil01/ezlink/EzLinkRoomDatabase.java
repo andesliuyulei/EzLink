@@ -8,7 +8,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-@Database(entities = {Card.class}, version = 1)
+@Database(entities = {Card.class}, version = 2)
 public abstract class EzLinkRoomDatabase extends RoomDatabase
 {
     public abstract CardDao cardDao();
@@ -24,7 +24,7 @@ public abstract class EzLinkRoomDatabase extends RoomDatabase
                 if (INSTANCE == null)
                 {
                     // Create database here
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), EzLinkRoomDatabase.class, "ezlink_database").addCallback(sRoomDatabaseCallback).build();
+                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), EzLinkRoomDatabase.class, "ezlink_database").fallbackToDestructiveMigration().addCallback(sRoomDatabaseCallback).build();
                 }
             }
         }
