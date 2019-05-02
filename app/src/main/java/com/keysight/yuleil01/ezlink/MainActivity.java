@@ -1010,7 +1010,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //ezLinkCardTypes = new ArrayList<>();
                     titles = output.get(0).split("\\|");
                     int indexof_EzLinkCardNumber = 0;
-                    int indexof_EzLinkCardType = 0;
+                    //int indexof_EzLinkCardType = 0;
                     int indexof_EzLinkCardOwner = 0;
 
                     //the first row are the titles.
@@ -1022,7 +1022,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                         else if (titles[i].equals("Card Type"))
                         {
-                            indexof_EzLinkCardType = i;
+                            //indexof_EzLinkCardType = i;
                         }
                         else if (titles[i].equals("Owner"))
                         {
