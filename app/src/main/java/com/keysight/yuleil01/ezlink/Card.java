@@ -16,10 +16,10 @@ public class Card
     @ColumnInfo(name = "card_owner")
     private String cardOwner;
 
-    public Card(@NonNull String cardNumber)
+    public Card(@NonNull String cardNumber, String cardOwner)
     {
         this.cardNumber = cardNumber;
-        this.cardOwner = "";
+        this.cardOwner = cardOwner;
     }
 
     public String getCardNumber()

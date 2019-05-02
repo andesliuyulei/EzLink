@@ -54,9 +54,9 @@ public abstract class EzLinkRoomDatabase extends RoomDatabase
         protected Void doInBackground(final Void... params)
         {
             mDao.deleteAll();
-            Card card = new Card("1234");
+            Card card = new Card("1234", null);
             mDao.insert(card);
-            card = new Card("5678");
+            card = new Card("5678", null);
             mDao.insert(card);
             return null;
         }

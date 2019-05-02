@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static int initJobCount = 0;
     private static int initJobTotal = 0;
     private static List<String> ezLinkCardNumbers = null;
-    private static List<String> ezLinkCardTypes = null;
+    //private static List<String> ezLinkCardTypes = null;
     private static List<String> listofKnownDistance = null;
     private static ArrayList<String> remarkList = null;
 
@@ -272,6 +272,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 for (Card card : cards)
                 {
                     ezLinkCardNumbers.add(card.getCardNumber());
+                    switch (card.getCardOwner())
+                    {
+                        case "LIU YULEI":
+                            cardof_lyl = card.getCardNumber();
+                            break;
+                        case "LI CHANG":
+                            cardof_lc = card.getCardNumber();
+                            break;
+                        case "LIU XINTONG":
+                            cardof_lxt = card.getCardNumber();
+                            break;
+                        default:
+                            //do nothing.
+                            break;
+                    }
                 }
                 ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
             }
@@ -280,13 +295,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * @description Get EzLink card type of a EzLink card number.
-     * @param ezLinkCardNumber
+     * @ param ezLinkCardNumber
      * @return
-     */
+     * /
     private String getEzlinkCardType(String ezLinkCardNumber)
     {
         return ezLinkCardTypes.get(ezLinkCardNumbers.indexOf(ezLinkCardNumber));
-    }
+    }//*/
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item)
@@ -992,7 +1007,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case "getInfo_ActiveEzLinkCards":
                     ezLinkCardNumbers = new ArrayList<>();
-                    ezLinkCardTypes = new ArrayList<>();
+                    //ezLinkCardTypes = new ArrayList<>();
                     titles = output.get(0).split("\\|");
                     int indexof_EzLinkCardNumber = 0;
                     int indexof_EzLinkCardType = 0;
@@ -1019,8 +1034,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     {
                         cardInfo = output.get(i).split("\\|");
                         ezLinkCardNumbers.add(cardInfo[indexof_EzLinkCardNumber]);
-                        mCardViewModel.insert(new Card(cardInfo[indexof_EzLinkCardNumber]));
-                        ezLinkCardTypes.add(cardInfo[indexof_EzLinkCardType]);
+                        mCardViewModel.insert(new Card(cardInfo[indexof_EzLinkCardNumber], cardInfo[indexof_EzLinkCardOwner]));
+                        //ezLinkCardTypes.add(cardInfo[indexof_EzLinkCardType]);
                         switch (cardInfo[indexof_EzLinkCardOwner])
                         {
                             case "LIU YULEI":
