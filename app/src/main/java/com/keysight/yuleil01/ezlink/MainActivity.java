@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String cardof_lxt = "8009150000708910";
 
     private CardViewModel mCardViewModel;
+    private BusStopViewModel mBusStopViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -256,6 +257,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //initializeDataFromApi();
 
         mCardViewModel = ViewModelProviders.of(this).get(CardViewModel.class);
+        mBusStopViewModel = ViewModelProviders.of(this).get(BusStopViewModel.class);
+
         mCardViewModel.getAllCards().observe(this, new Observer<List<Card>>()
         {
             @Override
@@ -289,6 +292,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
+            }
+        });
+
+        mBusStopViewModel.getAllElements().observe(this, new Observer<List<BusStop>>()
+        {
+            @Override
+            public void onChanged(@Nullable final List<BusStop> busStops)
+            {
+                List<String> busStopNames = new ArrayList<>();
+                for (BusStop busStop : busStops)
+                {
+                    busStopNames.add(busStop.getStopName());
+                }
+                ArrayAdapter<String> busStopAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, busStopNames);
+                busFrom.setAdapter(busStopAdapter);
+                busTo.setAdapter(busStopAdapter);
             }
         });
     }
@@ -433,6 +452,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else
         {
             mCardViewModel.deleteAllCards();
+            mBusStopViewModel.deleteAllElements();
             initJobCount = 0;
             initJobTotal = 5;
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
@@ -783,12 +803,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Attempt to resolve a missing, out-of-date, invalid or disabled Google
      * Play Services installation via a user dialog, if possible.
      */
-    private void acquireGooglePlayServices() {
-        GoogleApiAvailability apiAvailability =
-                GoogleApiAvailability.getInstance();
-        final int connectionStatusCode =
-                apiAvailability.isGooglePlayServicesAvailable(this);
-        if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
+    private void acquireGooglePlayServices()
+    {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        final int connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (apiAvailability.isUserResolvableError(connectionStatusCode))
+        {
             showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
         }
     }
@@ -804,17 +824,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * is granted.
      */
     @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
-    private void chooseAccount() {
-        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS)) {
+    private void chooseAccount()
+    {
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS))
+        {
             String accountName = getPreferences(Context.MODE_PRIVATE).getString(PREF_ACCOUNT_NAME, null);
-            if (accountName != null) {
+            if (accountName != null)
+            {
                 accountCredential.setSelectedAccountName(accountName);
                 initializeDataFromApi();
-            } else {
+            }
+            else
+            {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(accountCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
             }
-        } else {
+        }
+        else
+        {
             // Request the GET_ACCOUNTS permission via a user dialog
             EasyPermissions.requestPermissions(this, "This app needs to access your Google account (via Contacts).", REQUEST_PERMISSION_GET_ACCOUNTS, Manifest.permission.GET_ACCOUNTS);
         }
@@ -824,9 +851,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Checks whether the device currently has a network connection.
      * @return true if the device has a network connection, false otherwise.
      */
-    private boolean isDeviceOnline() {
-        ConnectivityManager connMgr =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    private boolean isDeviceOnline()
+    {
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
@@ -835,7 +862,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * An asynchronous task that handles the Google Apps Script Execution API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>>
+    {
         private com.google.api.services.script.Script mService = null;
         private Exception mLastError = null;
         //private String exeState = null;
@@ -843,7 +871,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         private String functionName = null;
         private List<Object> functionParameters = null;
 
-        MakeRequestTask(GoogleAccountCredential credential, String script, String function, List<Object> parameters) {
+        MakeRequestTask(GoogleAccountCredential credential, String script, String function, List<Object> parameters)
+        {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             //exeState = state;
@@ -861,10 +890,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
          * @param params no parameters needed for this task.
          */
         @Override
-        protected List<String> doInBackground(Void... params) {
-            try {
+        protected List<String> doInBackground(Void... params)
+        {
+            try
+            {
                 return getDataFromApi();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 mLastError = e;
                 cancel(true);
                 return null;
@@ -946,7 +979,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         @Override
-        protected void onPreExecute() {
+        protected void onPreExecute()
+        {
             if (functionName.equals("getInfo_ActiveEzLinkCards") ||
                     functionName.equals("getListOfRailStations") ||
                     functionName.equals("getListofBusStops") ||
@@ -976,7 +1010,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         @Override
-        protected void onPostExecute(List<String> output) {
+        protected void onPostExecute(List<String> output)
+        {
             String[] titles, cardInfo, fareInfo;
             switch (functionName) {
                 case "integrityCheck":
@@ -1071,6 +1106,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case "getListofBusStops":
                     String[] listofBusStops = output.toArray(new String[0]);
+                    for (String stopName : listofBusStops)
+                    {
+                        mBusStopViewModel.insert(new BusStop(stopName));
+                    }
                     ArrayAdapter<String> busStops = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listofBusStops);
                     busFrom.setAdapter(busStops);
                     busTo.setAdapter(busStops);
