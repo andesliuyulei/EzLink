@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CardViewModel mCardViewModel;
     private BusStopViewModel mBusStopViewModel;
     private MrtStationViewModel mMrtStationViewModel;
+    private TravelDistanceViewModel mTravelDistanceViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -260,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mCardViewModel = ViewModelProviders.of(this).get(CardViewModel.class);
         mBusStopViewModel = ViewModelProviders.of(this).get(BusStopViewModel.class);
         mMrtStationViewModel = ViewModelProviders.of(this).get(MrtStationViewModel.class);
+        mTravelDistanceViewModel = ViewModelProviders.of(this).get(TravelDistanceViewModel.class);
 
         mCardViewModel.getAllCards().observe(this, new Observer<List<Card>>()
         {
@@ -326,6 +328,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ArrayAdapter<String> mrtStationAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, mrtStationNames);
                 mrtFrom.setAdapter(mrtStationAdapter);
                 mrtTo.setAdapter(mrtStationAdapter);
+            }
+        });
+
+        mTravelDistanceViewModel.getAllElements().observe(this, new Observer<List<TravelDistance>>()
+        {
+            @Override
+            public void onChanged(@Nullable final List<TravelDistance> travelDistances)
+            {
+                if (listofKnownDistance == null)
+                {
+                    listofKnownDistance = new ArrayList<>();
+                }
+                else
+                {
+                    listofKnownDistance.clear();
+                }
+                for (TravelDistance travelDistance : travelDistances)
+                {
+                    listofKnownDistance.add(travelDistance.getTransit() + "|" + travelDistance.getFrom() + "|" + travelDistance.getTo());
+                }
             }
         });
     }
@@ -472,6 +494,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mCardViewModel.deleteAllCards();
             mBusStopViewModel.deleteAllElements();
             mMrtStationViewModel.deleteAllElements();
+            mTravelDistanceViewModel.deleteAllElements();
             initJobCount = 0;
             initJobTotal = 5;
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
@@ -1144,16 +1167,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case "getInfo_DistanceTable":
                     int numofInfo = output.size()/4;
-                    listofKnownDistance = new ArrayList<>();
+                    //listofKnownDistance = new ArrayList<>();
                     for (int i = 0; i < numofInfo; i++)
                     {
                         String transit = output.get(i);
                         String from = output.get(i + numofInfo);
                         String to = output.get(i + numofInfo * 2);
-                        listofKnownDistance.add(transit.concat("|" + from + "|" + to));
+                        mTravelDistanceViewModel.insert(new TravelDistance(transit, from, to));
+                        //listofKnownDistance.add(transit.concat("|" + from + "|" + to));
                         if (transit.equals("MRT-MRT"))
                         {
-                            listofKnownDistance.add(transit.concat("|" + to + "|" + from));
+                            mTravelDistanceViewModel.insert(new TravelDistance(transit, to, from));
+                            //listofKnownDistance.add(transit.concat("|" + to + "|" + from));
                         }
                     }
                     initJobCount++;
