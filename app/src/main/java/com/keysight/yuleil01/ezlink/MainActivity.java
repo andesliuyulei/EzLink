@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private CardViewModel mCardViewModel;
     private BusStopViewModel mBusStopViewModel;
+    private MrtStationViewModel mMrtStationViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -258,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mCardViewModel = ViewModelProviders.of(this).get(CardViewModel.class);
         mBusStopViewModel = ViewModelProviders.of(this).get(BusStopViewModel.class);
+        mMrtStationViewModel = ViewModelProviders.of(this).get(MrtStationViewModel.class);
 
         mCardViewModel.getAllCards().observe(this, new Observer<List<Card>>()
         {
@@ -308,6 +310,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ArrayAdapter<String> busStopAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, busStopNames);
                 busFrom.setAdapter(busStopAdapter);
                 busTo.setAdapter(busStopAdapter);
+            }
+        });
+
+        mMrtStationViewModel.getAllElements().observe(this, new Observer<List<MrtStation>>()
+        {
+            @Override
+            public void onChanged(@Nullable final List<MrtStation> mrtStations)
+            {
+                List<String> mrtStationNames = new ArrayList<>();
+                for (MrtStation mrtStation : mrtStations)
+                {
+                    mrtStationNames.add(mrtStation.getStationName());
+                }
+                ArrayAdapter<String> mrtStationAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, mrtStationNames);
+                mrtFrom.setAdapter(mrtStationAdapter);
+                mrtTo.setAdapter(mrtStationAdapter);
             }
         });
     }
@@ -453,6 +471,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             mCardViewModel.deleteAllCards();
             mBusStopViewModel.deleteAllElements();
+            mMrtStationViewModel.deleteAllElements();
             initJobCount = 0;
             initJobTotal = 5;
             new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
@@ -1041,7 +1060,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     break;
                 case "getInfo_ActiveEzLinkCards":
-                    ezLinkCardNumbers = new ArrayList<>();
+                    //ezLinkCardNumbers = new ArrayList<>();
                     //ezLinkCardTypes = new ArrayList<>();
                     titles = output.get(0).split("\\|");
                     int indexof_EzLinkCardNumber = 0;
@@ -1068,9 +1087,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     for (int i=1; i<output.size(); i++)
                     {
                         cardInfo = output.get(i).split("\\|");
-                        ezLinkCardNumbers.add(cardInfo[indexof_EzLinkCardNumber]);
+                        //ezLinkCardNumbers.add(cardInfo[indexof_EzLinkCardNumber]);
                         mCardViewModel.insert(new Card(cardInfo[indexof_EzLinkCardNumber], cardInfo[indexof_EzLinkCardOwner]));
                         //ezLinkCardTypes.add(cardInfo[indexof_EzLinkCardType]);
+                        /*//
                         switch (cardInfo[indexof_EzLinkCardOwner])
                         {
                             case "LIU YULEI":
@@ -1085,10 +1105,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             default:
                                 //do nothing.
                                 break;
-                        }
+                        }//*/
                     }
 
-                    ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
+                    //ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
                     initJobCount++;
                     if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();
@@ -1096,9 +1116,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case "getListOfRailStations":
                     String[] listOfRailStations = output.toArray(new String[0]);
-                    ArrayAdapter<String> railStations = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfRailStations);
-                    mrtFrom.setAdapter(railStations);
-                    mrtTo.setAdapter(railStations);
+                    for (String stationName : listOfRailStations)
+                    {
+                        mMrtStationViewModel.insert(new MrtStation(stationName));
+                    }
+                    //ArrayAdapter<String> railStations = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfRailStations);
+                    //mrtFrom.setAdapter(railStations);
+                    //mrtTo.setAdapter(railStations);
                     initJobCount++;
                     if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();//.hide();
@@ -1110,9 +1134,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     {
                         mBusStopViewModel.insert(new BusStop(stopName));
                     }
-                    ArrayAdapter<String> busStops = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listofBusStops);
-                    busFrom.setAdapter(busStops);
-                    busTo.setAdapter(busStops);
+                    //ArrayAdapter<String> busStops = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listofBusStops);
+                    //busFrom.setAdapter(busStops);
+                    //busTo.setAdapter(busStops);
                     initJobCount++;
                     if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();//.hide();

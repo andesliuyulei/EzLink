@@ -8,11 +8,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-@Database(entities = {Card.class, BusStop.class}, version = 3)
+@Database(entities = {Card.class, BusStop.class, MrtStation.class}, version = 4)
 public abstract class EzLinkRoomDatabase extends RoomDatabase
 {
     public abstract CardDao cardDao();
     public abstract BusStopDao busStopDao();
+    public abstract MrtStationDao mrtStationDao();
 
     private static volatile EzLinkRoomDatabase INSTANCE;
 
