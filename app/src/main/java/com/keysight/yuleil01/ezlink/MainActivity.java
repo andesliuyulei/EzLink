@@ -514,18 +514,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else
         {
-            //mCardViewModel.deleteAllCards();
-            //mBusStopViewModel.deleteAllElements();
-            //mMrtStationViewModel.deleteAllElements();
-            //mTravelDistanceViewModel.deleteAllElements();
-            //mRemarkViewModel.deleteAllElements();
+            mCardViewModel.deleteAllCards();
+            mBusStopViewModel.deleteAllElements();
+            mMrtStationViewModel.deleteAllElements();
+            mTravelDistanceViewModel.deleteAllElements();
+            mRemarkViewModel.deleteAllElements();
             initJobCount = 0;
-            initJobTotal = 1;
-            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
-            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
-            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getListofBusStops", null).execute();
+            initJobTotal = 5;
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getListofBusStops", null).execute();
             new MakeRequestTask(accountCredential, scriptId_MyBank, "getRemarkList", null).execute();
-            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_DistanceTable", null).execute();
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_DistanceTable", null).execute();
         }
     }
 
@@ -1101,13 +1101,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case "getRemarkList":
                     //remarkList = (ArrayList<String>) output;
                     ///
+                    //List<Remark> remarks = new ArrayList<>();
                     for (String remark : output)
                     {
                         if (remarkList.indexOf(remark) < 0)
                         {
                             mRemarkViewModel.insert(new Remark(remark));
+                            //remarks.add(new Remark(remark));
                         }
                     }
+                    //mRemarkViewModel.insertElements(remarks);
                     //*/
                     //editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
                     initJobCount++;
