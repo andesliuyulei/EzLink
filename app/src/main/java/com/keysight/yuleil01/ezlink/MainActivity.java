@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         progressDialog = new ProgressDialog(this);
         //initializeDataFromApi();
+        initializeAccount();
 
         mCardViewModel = ViewModelProviders.of(this).get(CardViewModel.class);
         mBusStopViewModel = ViewModelProviders.of(this).get(BusStopViewModel.class);
@@ -495,12 +496,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void integrityCheck()
     {
-        new MakeRequestTask(accountCredential, scriptId_EzLink, "integrityCheck", null).execute();
+        if (!isDeviceOnline())
+        {
+            alert("No network connection available.");
+        }
+        else
+        {
+            new MakeRequestTask(accountCredential, scriptId_EzLink, "integrityCheck", null).execute();
+        }
     }
 
-    private void initializeDataFromApi()
+    private void initializeAccount()
     {
-        if (! isGooglePlayServicesAvailable())
+        if (!isGooglePlayServicesAvailable())
         {
             acquireGooglePlayServices();
         }
@@ -508,7 +516,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             chooseAccount();
         }
-        else if (! isDeviceOnline())
+    }
+
+    private void initializeDataFromApi()
+    {
+        if (!isDeviceOnline())
         {
             alert("No network connection available.");
         }
@@ -843,7 +855,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //Do nothing here.
         }
 
-        if (! isDeviceOnline()) {
+        if (!isDeviceOnline()) {
             alert("No network connection available.");
             return;
         } else {
@@ -898,7 +910,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (accountName != null)
             {
                 accountCredential.setSelectedAccountName(accountName);
-                initializeDataFromApi();
+                //initializeDataFromApi();
             }
             else
             {
