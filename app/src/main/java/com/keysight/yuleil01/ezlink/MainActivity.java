@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static List<String> ezLinkCardNumbers = null;
     //private static List<String> ezLinkCardTypes = null;
     private static List<String> listofKnownDistance = null;
-    private static ArrayList<String> remarkList = null;
+    private static List<String> remarkList = null;
 
     private static String cardof_lyl = "4524192003400508";
     private static String cardof_lc = "1000170007072294";
@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BusStopViewModel mBusStopViewModel;
     private MrtStationViewModel mMrtStationViewModel;
     private TravelDistanceViewModel mTravelDistanceViewModel;
+    private RemarkViewModel mRemarkViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -262,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mBusStopViewModel = ViewModelProviders.of(this).get(BusStopViewModel.class);
         mMrtStationViewModel = ViewModelProviders.of(this).get(MrtStationViewModel.class);
         mTravelDistanceViewModel = ViewModelProviders.of(this).get(TravelDistanceViewModel.class);
+        mRemarkViewModel = ViewModelProviders.of(this).get(RemarkViewModel.class);
 
         mCardViewModel.getAllCards().observe(this, new Observer<List<Card>>()
         {
@@ -348,6 +350,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 {
                     listofKnownDistance.add(travelDistance.getTransit() + "|" + travelDistance.getFrom() + "|" + travelDistance.getTo());
                 }
+            }
+        });
+
+        mRemarkViewModel.getAllElements().observe(this, new Observer<List<Remark>>()
+        {
+            @Override
+            public void onChanged(@Nullable final List<Remark> remarks)
+            {
+                if (remarkList == null)
+                {
+                    remarkList = new ArrayList<>();
+                }
+                else
+                {
+                    remarkList.clear();
+                }
+                for (Remark remark : remarks)
+                {
+                    remarkList.add(remark.getRemark());
+                }
+                editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
             }
         });
     }
@@ -491,17 +514,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else
         {
-            mCardViewModel.deleteAllCards();
-            mBusStopViewModel.deleteAllElements();
-            mMrtStationViewModel.deleteAllElements();
-            mTravelDistanceViewModel.deleteAllElements();
+            //mCardViewModel.deleteAllCards();
+            //mBusStopViewModel.deleteAllElements();
+            //mMrtStationViewModel.deleteAllElements();
+            //mTravelDistanceViewModel.deleteAllElements();
+            //mRemarkViewModel.deleteAllElements();
             initJobCount = 0;
-            initJobTotal = 5;
-            new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
-            new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
-            new MakeRequestTask(accountCredential, scriptId_EzLink, "getListofBusStops", null).execute();
+            initJobTotal = 1;
+            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_ActiveEzLinkCards", null).execute();
+            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getListOfRailStations", null).execute();
+            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getListofBusStops", null).execute();
             new MakeRequestTask(accountCredential, scriptId_MyBank, "getRemarkList", null).execute();
-            new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_DistanceTable", null).execute();
+            //new MakeRequestTask(accountCredential, scriptId_EzLink, "getInfo_DistanceTable", null).execute();
         }
     }
 
@@ -1075,8 +1099,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //Do nothing here.
                     break;
                 case "getRemarkList":
-                    remarkList = (ArrayList<String>) output;
-                    editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
+                    //remarkList = (ArrayList<String>) output;
+                    ///
+                    for (String remark : output)
+                    {
+                        if (remarkList.indexOf(remark) < 0)
+                        {
+                            mRemarkViewModel.insert(new Remark(remark));
+                        }
+                    }
+                    //*/
+                    //editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
                     initJobCount++;
                     if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();
