@@ -109,6 +109,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //private static List<String> ezLinkCardTypes = null;
     private static List<String> listofKnownDistance = null;
     private static List<String> remarkList = null;
+    private static List<String> listofMrtStations = null;
+    private static List<String> listofBusStops = null;
 
     private static String cardof_lyl = "4524192003400508";
     private static String cardof_lc = "1000170007072294";
@@ -307,12 +309,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onChanged(@Nullable final List<BusStop> busStops)
             {
-                List<String> busStopNames = new ArrayList<>();
+                if (listofBusStops == null)
+                {
+                    listofBusStops = new ArrayList<>();
+                }
+                else
+                {
+                    listofBusStops.clear();
+                }
                 for (BusStop busStop : busStops)
                 {
-                    busStopNames.add(busStop.getStopName());
+                    listofBusStops.add(busStop.getStopName());
                 }
-                ArrayAdapter<String> busStopAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, busStopNames);
+                ArrayAdapter<String> busStopAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listofBusStops);
                 busFrom.setAdapter(busStopAdapter);
                 busTo.setAdapter(busStopAdapter);
             }
@@ -323,12 +332,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onChanged(@Nullable final List<MrtStation> mrtStations)
             {
-                List<String> mrtStationNames = new ArrayList<>();
+                if (listofMrtStations == null)
+                {
+                    listofMrtStations = new ArrayList<>();
+                }
+                else
+                {
+                    listofMrtStations.clear();
+                }
                 for (MrtStation mrtStation : mrtStations)
                 {
-                    mrtStationNames.add(mrtStation.getStationName());
+                    listofMrtStations.add(mrtStation.getStationName());
                 }
-                ArrayAdapter<String> mrtStationAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, mrtStationNames);
+                ArrayAdapter<String> mrtStationAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listofMrtStations);
                 mrtFrom.setAdapter(mrtStationAdapter);
                 mrtTo.setAdapter(mrtStationAdapter);
             }
@@ -717,6 +733,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
                 listofKnownDistance.add("MRT-MRT|" + mrt1 + "|" + mrt2);
                 listofKnownDistance.add("MRT-MRT|" + mrt2 + "|" + mrt1);
+                mTravelDistanceViewModel.insert(new TravelDistance("MRT-MRT", mrt1, mrt2));
+                mTravelDistanceViewModel.insert(new TravelDistance("MRT-MRT", mrt2, mrt1));
+                if (listofMrtStations.indexOf(mrt1) < 0)
+                {
+                    mMrtStationViewModel.insert(new MrtStation(mrt1));
+                }
+                if (listofMrtStations.indexOf(mrt2) < 0)
+                {
+                    mMrtStationViewModel.insert(new MrtStation(mrt2));
+                }
             }
             functionParameters.add(prepeak);
 
@@ -798,6 +824,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 functionName = "ezlinkTransaction_Bus_NewDistance";
                 functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
                 listofKnownDistance.add("BUS " + bus0 + "|" + bus1 + "|" + bus2);
+                mTravelDistanceViewModel.insert(new TravelDistance("BUS " + bus0, bus1, bus2));
+                if (listofBusStops.indexOf(bus1) < 0)
+                {
+                    mBusStopViewModel.insert(new BusStop(bus1));
+                }
+                if (listofBusStops.indexOf(bus2) < 0)
+                {
+                    mBusStopViewModel.insert(new BusStop(bus2));
+                }
             }
 
             /*//
@@ -825,7 +860,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             functionParameters.add(editDate.getText().toString());
             //*/
-        } else if (retailRadio.isChecked()) {
+        }
+        else if (retailRadio.isChecked())
+        {
             String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_Retail";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
@@ -838,7 +875,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 remarkToAdd.add(remark);
                 new MakeRequestTask(accountCredential, scriptId_MyBank, "addRemark", remarkToAdd).execute();
             }
-        } else if (topupRadio.isChecked()) {
+        }
+        else if (topupRadio.isChecked())
+        {
             String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_ManualTopUp";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
@@ -851,14 +890,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 remarkToAdd.add(remark);
                 new MakeRequestTask(accountCredential, scriptId_MyBank, "addRemark", remarkToAdd).execute();
             }
-        } else {
+        }
+        else
+        {
             //Do nothing here.
         }
 
-        if (!isDeviceOnline()) {
+        if (!isDeviceOnline())
+        {
             alert("No network connection available.");
             return;
-        } else {
+        }
+        else
+        {
             new MakeRequestTask(accountCredential, scriptId_EzLink, functionName, functionParameters).execute();
         }
     }
