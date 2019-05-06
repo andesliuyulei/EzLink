@@ -868,9 +868,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
             functionParameters.add(remark);
             functionParameters.add(editDate.getText().toString());
-            if (remarkList.indexOf(remark) < 0) {
-                remarkList.add(remark);
-                editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
+            if (remarkList.indexOf(remark) < 0)
+            {
+                mRemarkViewModel.insert(new Remark(remark));
+                //remarkList.add(remark);
+                //editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
                 List<Object> remarkToAdd = new ArrayList<>();
                 remarkToAdd.add(remark);
                 new MakeRequestTask(accountCredential, scriptId_MyBank, "addRemark", remarkToAdd).execute();
@@ -883,9 +885,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
             functionParameters.add(remark);
             functionParameters.add(editDate.getText().toString());
-            if (remarkList.indexOf(remark) < 0) {
-                remarkList.add(remark);
-                editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
+            if (remarkList.indexOf(remark) < 0)
+            {
+                mRemarkViewModel.insert(new Remark(remark));
+                //remarkList.add(remark);
+                //editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
                 List<Object> remarkToAdd = new ArrayList<>();
                 remarkToAdd.add(remark);
                 new MakeRequestTask(accountCredential, scriptId_MyBank, "addRemark", remarkToAdd).execute();
