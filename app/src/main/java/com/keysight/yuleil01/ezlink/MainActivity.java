@@ -70,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = {
+    private static final String[] SCOPES =
+    {
             "https://www.googleapis.com/auth/drive",
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/script.external_request", //2018-06-09: added.
@@ -106,15 +107,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static int initJobCount = 0;
     private static int initJobTotal = 0;
     private static List<String> ezLinkCardNumbers = null;
-    //private static List<String> ezLinkCardTypes = null;
     private static List<String> listofKnownDistance = null;
     private static List<String> remarkList = null;
     private static List<String> listofMrtStations = null;
     private static List<String> listofBusStops = null;
 
-    private static String cardof_lyl = "4524192003400508";
-    private static String cardof_lc = "1000170007072294";
-    private static String cardof_lxt = "8009150000708910";
+    private static String cardof_lyl = "";
+    private static String cardof_lc = "";
+    private static String cardof_lxt = "";
 
     private CardViewModel mCardViewModel;
     private BusStopViewModel mBusStopViewModel;
@@ -392,16 +392,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    /**
-     * @description Get EzLink card type of a EzLink card number.
-     * @ param ezLinkCardNumber
-     * @return
-     * /
-    private String getEzlinkCardType(String ezLinkCardNumber)
-    {
-        return ezLinkCardTypes.get(ezLinkCardNumbers.indexOf(ezLinkCardNumber));
-    }//*/
-
     @Override
     public boolean onNavigationItemSelected(MenuItem item)
     {
@@ -569,12 +559,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void displayRecyclerView()
     {
-        /*//
-        mCardViewModel.deleteAllCards();
-        mCardViewModel.insert(new Card("testing 1"));
-        mCardViewModel.insert(new Card("testing 2"));
-        mCardViewModel.insert(new Card("testing 3"));
-        //*/
         Intent intent = new Intent(this, DisplayRecyclerView.class);
         startActivity(intent);
     }
@@ -607,59 +591,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
-    /**
-     * Description: Get the fare of MRT to MRT route.
-     * /
-    private float getFare_Mrt_Mrt(String mrt1, String mrt2) {
-        for (int i=0; i<knownFareTable.length; i++) {
-            if (knownFareTable[i][0].equals("MRT-MRT")) {
-                if (knownFareTable[i][1].equals(mrt1) && knownFareTable[i][2].equals(mrt2)) {
-                    return Float.parseFloat(knownFareTable[i][3]);
-                } else if (knownFareTable[i][1].equals(mrt2) && knownFareTable[i][2].equals(mrt1)) {
-                    return Float.parseFloat(knownFareTable[i][3]);
-                }
-            }
-        }
-        return 0;
-    }//end of the function*/
-
     private void checkIfIsPrePeak()
     {
-        //2017-12-29: enabled.
         Date now = new Date();
         int day = now.getDay();
         int hour = now.getHours();
         int minute = now.getMinutes();
-        if (day >= 1 && day <= 5) {
-            if (hour < 7) {
+        if (day >= 1 && day <= 5)
+        {
+            if (hour < 7)
+            {
                 prePeakCheckBox.setChecked(Boolean.TRUE);
-            } else if (hour == 7 && minute < 45) {
+            }
+            else if (hour == 7 && minute < 45)
+            {
                 prePeakCheckBox.setChecked(Boolean.TRUE);
-            } else {
+            }
+            else
+            {
                 //do nothing here.
             }
-        } else {
+        }
+        else
+        {
             //do nothing here.
-        }//*/
-
-        /*/Requires API level 26.
-        DayOfWeek today = LocalDate.now().getDayOfWeek();
-        LocalTime now = LocalTime.now();
-        int hour = now.getHour();
-        int minute = now.getMinute();
-        if (today.equals(DayOfWeek.MONDAY) ||
-                today.equals(DayOfWeek.TUESDAY) ||
-                today.equals(DayOfWeek.WEDNESDAY) ||
-                today.equals(DayOfWeek.THURSDAY) ||
-                today.equals(DayOfWeek.FRIDAY)) {
-            if (hour < 7) {
-                transactionCardType = transactionCardType.concat("(-pre-peak)");
-            } else if (hour == 7 && minute < 45) {
-                transactionCardType = transactionCardType.concat("(-pre-peak)");
-            } else {
-                //do nothing here.
-            }
-        }//*/
+        }
     }
 
     /**
@@ -677,7 +633,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             alert("Please enter 'EZLink Card Number'.");
             return;
         }
-        //String transactionCardType = getEzlinkCardType(transactionCardNumber);
 
         String functionName = "";
         List<Object> functionParameters = new ArrayList<>();
@@ -699,7 +654,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (prePeakCheckBox.isChecked())
             {
-                //transactionCardType = transactionCardType.concat("-pre-peak");
                 prepeak = true;
             }
 
@@ -745,35 +699,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             functionParameters.add(prepeak);
-
-            /*//
-            if (knownFareList_MrtMrt.indexOf(mrt1 + "|" + mrt2 + "|" + transactionCardType) >= 0)
-            {
-                functionName = "ezlinkTransaction_MrtMrt";
-                functionParameters.add(transactionCardType);
-            }
-            else
-            {
-                if (!fareSgd.isShown())
-                {
-                    alert("The fare (" + mrt1 + "-" + mrt2 + "-" + transactionCardType + ") is unknown. Please enter 'Fare (SGD)'.");
-                    fareSgd.setText("");
-                    fareSgd.setVisibility(View.VISIBLE);
-                    return;
-                }
-                else if (fareSgd.getText().toString().equals(""))
-                {
-                    alert("Please enter 'Fare (SGD)'.");
-                    return;
-                }
-                functionName = "ezlinkTransaction_MrtMrt_NewFare";
-                functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
-                functionParameters.add(transactionCardType);
-                knownFareList_MrtMrt.add(mrt1 + "|" + mrt2 + "|" + transactionCardType);
-                knownFareList_MrtMrt.add(mrt2 + "|" + mrt1 + "|" + transactionCardType);
-            }
-            functionParameters.add(editDate.getText().toString());
-            //*/
         }
         else if (busRadio.isChecked())
         {
@@ -834,32 +759,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mBusStopViewModel.insert(new BusStop(bus2));
                 }
             }
-
-            /*//
-            if (knownFareList_Bus.indexOf("BUS " + bus0 + "|" + bus1 + "|" + bus2 + "|" + transactionCardType) >= 0)
-            {
-                functionName = "ezlinkTransaction_Bus";
-            }
-            else
-            {
-                if (!fareSgd.isShown())
-                {
-                    alert("The fare (" + bus0 + "-" + bus1 + "-" + bus2 + "-" + transactionCardType + ") is unknown. Please enter 'Fare (SGD)'.");
-                    fareSgd.setText("");
-                    fareSgd.setVisibility(View.VISIBLE);
-                    return;
-                }
-                else if (fareSgd.getText().toString().equals(""))
-                {
-                    alert("Please enter 'Fare (SGD)'.");
-                    return;
-                }
-                functionName = "ezlinkTransaction_Bus_NewFare";
-                functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
-                knownFareList_Bus.add("BUS " + bus0 + "|" + bus1 + "|" + bus2 + "|" + transactionCardType);
-            }
-            functionParameters.add(editDate.getText().toString());
-            //*/
         }
         else if (retailRadio.isChecked())
         {
@@ -871,8 +770,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (remarkList.indexOf(remark) < 0)
             {
                 mRemarkViewModel.insert(new Remark(remark));
-                //remarkList.add(remark);
-                //editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
                 List<Object> remarkToAdd = new ArrayList<>();
                 remarkToAdd.add(remark);
                 new MakeRequestTask(accountCredential, scriptId_MyBank, "addRemark", remarkToAdd).execute();
@@ -888,8 +785,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (remarkList.indexOf(remark) < 0)
             {
                 mRemarkViewModel.insert(new Remark(remark));
-                //remarkList.add(remark);
-                //editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
                 List<Object> remarkToAdd = new ArrayList<>();
                 remarkToAdd.add(remark);
                 new MakeRequestTask(accountCredential, scriptId_MyBank, "addRemark", remarkToAdd).execute();
@@ -918,10 +813,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private boolean isGooglePlayServicesAvailable()
     {
-        GoogleApiAvailability apiAvailability =
-                GoogleApiAvailability.getInstance();
-        final int connectionStatusCode =
-                apiAvailability.isGooglePlayServicesAvailable(this);
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        final int connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this);
         return connectionStatusCode == ConnectionResult.SUCCESS;
     }
 
@@ -958,7 +851,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (accountName != null)
             {
                 accountCredential.setSelectedAccountName(accountName);
-                //initializeDataFromApi();
             }
             else
             {
@@ -992,7 +884,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         private com.google.api.services.script.Script mService = null;
         private Exception mLastError = null;
-        //private String exeState = null;
         private String scriptId = null;
         private String functionName = null;
         private List<Object> functionParameters = null;
@@ -1001,7 +892,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            //exeState = state;
             scriptId = script;
             functionName = function;
             functionParameters = parameters;
@@ -1072,8 +962,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
          * @return summary of error response, or null if Operation returned no
          *     error
          */
-        private String getScriptError(Operation op) {
-            if (op.getError() == null) {
+        private String getScriptError(Operation op)
+        {
+            if (op.getError() == null)
+            {
                 return null;
             }
 
@@ -1082,18 +974,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // 'errorType', and an array of stack trace elements (which also need to
             // be cast as Maps).
             Map<String, Object> detail = op.getError().getDetails().get(0);
-            List<Map<String, Object>> stacktrace =
-                    (List<Map<String, Object>>)detail.get("scriptStackTraceElements");
+            List<Map<String, Object>> stacktrace = (List<Map<String, Object>>)detail.get("scriptStackTraceElements");
 
-            java.lang.StringBuilder sb =
-                    new StringBuilder("\nScript error message: ");
+            java.lang.StringBuilder sb = new StringBuilder("\nScript error message: ");
             sb.append(detail.get("errorMessage"));
 
-            if (stacktrace != null) {
+            if (stacktrace != null)
+            {
                 // There may not be a stacktrace if the script didn't start
                 // executing.
                 sb.append("\nScript error stacktrace:");
-                for (Map<String, Object> elem : stacktrace) {
+                for (Map<String, Object> elem : stacktrace)
+                {
                     sb.append("\n  ");
                     sb.append(elem.get("function"));
                     sb.append(":");
@@ -1110,7 +1002,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (functionName.equals("getInfo_ActiveEzLinkCards") ||
                     functionName.equals("getListOfRailStations") ||
                     functionName.equals("getListofBusStops") ||
-                    //functionName.equals("getInfo_KnownFareLookup") ||
                     functionName.equals("getInfo_DistanceTable") ||
                     functionName.equals("getRemarkList"))
             {
@@ -1139,7 +1030,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected void onPostExecute(List<String> output)
         {
             String[] titles, cardInfo, fareInfo;
-            switch (functionName) {
+            switch (functionName)
+            {
                 case "integrityCheck":
                     progressDialog.dismiss();
                     String todayDate = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
@@ -1159,31 +1051,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //Do nothing here.
                     break;
                 case "getRemarkList":
-                    //remarkList = (ArrayList<String>) output;
-                    ///
-                    //List<Remark> remarks = new ArrayList<>();
                     for (String remark : output)
                     {
                         if (remarkList.indexOf(remark) < 0)
                         {
                             mRemarkViewModel.insert(new Remark(remark));
-                            //remarks.add(new Remark(remark));
                         }
                     }
-                    //mRemarkViewModel.insertElements(remarks);
-                    //*/
-                    //editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
                     initJobCount++;
                     if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();
                     }
                     break;
                 case "getInfo_ActiveEzLinkCards":
-                    //ezLinkCardNumbers = new ArrayList<>();
-                    //ezLinkCardTypes = new ArrayList<>();
                     titles = output.get(0).split("\\|");
                     int indexof_EzLinkCardNumber = 0;
-                    //int indexof_EzLinkCardType = 0;
                     int indexof_EzLinkCardOwner = 0;
 
                     //the first row are the titles.
@@ -1192,10 +1074,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (titles[i].equals("Card Number"))
                         {
                             indexof_EzLinkCardNumber = i;
-                        }
-                        else if (titles[i].equals("Card Type"))
-                        {
-                            //indexof_EzLinkCardType = i;
                         }
                         else if (titles[i].equals("Owner"))
                         {
@@ -1206,28 +1084,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     for (int i=1; i<output.size(); i++)
                     {
                         cardInfo = output.get(i).split("\\|");
-                        //ezLinkCardNumbers.add(cardInfo[indexof_EzLinkCardNumber]);
                         mCardViewModel.insert(new Card(cardInfo[indexof_EzLinkCardNumber], cardInfo[indexof_EzLinkCardOwner]));
-                        //ezLinkCardTypes.add(cardInfo[indexof_EzLinkCardType]);
-                        /*//
-                        switch (cardInfo[indexof_EzLinkCardOwner])
-                        {
-                            case "LIU YULEI":
-                                cardof_lyl = cardInfo[indexof_EzLinkCardNumber];
-                                break;
-                            case "LI CHANG":
-                                cardof_lc = cardInfo[indexof_EzLinkCardNumber];
-                                break;
-                            case "LIU XINTONG":
-                                cardof_lxt = cardInfo[indexof_EzLinkCardNumber];
-                                break;
-                            default:
-                                //do nothing.
-                                break;
-                        }//*/
                     }
 
-                    //ezlinkCardNumber.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ezLinkCardNumbers));
                     initJobCount++;
                     if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();
@@ -1239,9 +1098,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     {
                         mMrtStationViewModel.insert(new MrtStation(stationName));
                     }
-                    //ArrayAdapter<String> railStations = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listOfRailStations);
-                    //mrtFrom.setAdapter(railStations);
-                    //mrtTo.setAdapter(railStations);
                     initJobCount++;
                     if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();//.hide();
@@ -1253,9 +1109,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     {
                         mBusStopViewModel.insert(new BusStop(stopName));
                     }
-                    //ArrayAdapter<String> busStops = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, listofBusStops);
-                    //busFrom.setAdapter(busStops);
-                    //busTo.setAdapter(busStops);
                     initJobCount++;
                     if (initJobCount >= initJobTotal) {
                         progressDialog.dismiss();//.hide();
@@ -1263,18 +1116,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case "getInfo_DistanceTable":
                     int numofInfo = output.size()/4;
-                    //listofKnownDistance = new ArrayList<>();
                     for (int i = 0; i < numofInfo; i++)
                     {
                         String transit = output.get(i);
                         String from = output.get(i + numofInfo);
                         String to = output.get(i + numofInfo * 2);
                         mTravelDistanceViewModel.insert(new TravelDistance(transit, from, to));
-                        //listofKnownDistance.add(transit.concat("|" + from + "|" + to));
                         if (transit.equals("MRT-MRT"))
                         {
                             mTravelDistanceViewModel.insert(new TravelDistance(transit, to, from));
-                            //listofKnownDistance.add(transit.concat("|" + to + "|" + from));
                         }
                     }
                     initJobCount++;
@@ -1283,56 +1133,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         progressDialog.dismiss();
                     }
                     break;
-                /*//
-                case "getInfo_KnownFareLookup":
-                    knownFareList_MrtMrt = new ArrayList<>();
-                    knownFareList_Bus = new ArrayList<>();
-                    titles = output.get(0).split("\\|");
-                    int indexof_Route = 0;
-                    int indexof_Mrt1 = 0;
-                    int indexof_Mrt2 = 0;
-                    int indexof_FareType = 0;
-
-                    //the first row are the titles.
-                    for (int i=0; i<titles.length; i++) {
-                        switch (titles[i]) {
-                            case "Route":
-                                indexof_Route = i;
-                                break;
-                            case "MRT 1":
-                                indexof_Mrt1 = i;
-                                break;
-                            case "MRT 2":
-                                indexof_Mrt2 = i;
-                                break;
-                            case "Fare Type":
-                                indexof_FareType = i;
-                                break;
-                            default:
-                                //do nothing here.
-                                break;
-                        }
-                    }
-
-                    for (int i=1; i<output.size(); i++)
-                    {
-                        fareInfo = output.get(i).split("\\|");
-                        if (fareInfo[indexof_Route].equals("MRT-MRT"))
-                        {
-                            knownFareList_MrtMrt.add(fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_FareType]);
-                            knownFareList_MrtMrt.add(fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_FareType]);
-                        }
-                        else if (fareInfo[indexof_Route].startsWith("BUS "))
-                        {
-                            knownFareList_Bus.add(fareInfo[indexof_Route] + "|" + fareInfo[indexof_Mrt1] + "|" + fareInfo[indexof_Mrt2] + "|" + fareInfo[indexof_FareType]);
-                        }
-                    }
-
-                    initJobCount++;
-                    if (initJobCount >= initJobTotal) {
-                        progressDialog.dismiss();//.hide();
-                    }
-                    break;//*/
                 default:
                     progressDialog.dismiss();
                     displayResult(output);
@@ -1375,13 +1175,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param connectionStatusCode code describing the presence (or lack of)
      *     Google Play Services on this device.
      */
-    void showGooglePlayServicesAvailabilityErrorDialog(
-            final int connectionStatusCode) {
+    void showGooglePlayServicesAvailabilityErrorDialog( final int connectionStatusCode)
+    {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        Dialog dialog = apiAvailability.getErrorDialog(
-                MainActivity.this,
-                connectionStatusCode,
-                REQUEST_GOOGLE_PLAY_SERVICES);
+        Dialog dialog = apiAvailability.getErrorDialog(MainActivity.this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
     }
 
@@ -1393,12 +1190,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      *         a credential object.
      * @return an initializer with an extended read timeout.
      */
-    private static HttpRequestInitializer setHttpTimeout(
-            final HttpRequestInitializer requestInitializer) {
-        return new HttpRequestInitializer() {
+    private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer)
+    {
+        return new HttpRequestInitializer()
+        {
             @Override
-            public void initialize(HttpRequest httpRequest)
-                    throws java.io.IOException {
+            public void initialize(HttpRequest httpRequest) throws java.io.IOException
+            {
                 requestInitializer.initialize(httpRequest);
                 // This allows the API to call (and avoid timing out on)
                 // functions that take up to 6 minutes to complete (the maximum
@@ -1419,40 +1217,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      *     activity result.
      */
     @Override
-    protected void onActivityResult(
-            int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult( int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
+        switch(requestCode)
+        {
             case REQUEST_GOOGLE_PLAY_SERVICES:
-                if (resultCode != RESULT_OK) {
+                if (resultCode != RESULT_OK)
+                {
                     //mOutputText.setText(
                     //        "This app requires Google Play Services. Please install " +
                     //                "Google Play Services on your device and relaunch this app.");
-                } else {
-                    //getResultsFromApi();
+                }
+                else
+                {
+                    //TODO what to do?
                     initializeDataFromApi();
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
-                if (resultCode == RESULT_OK && data != null &&
-                        data.getExtras() != null) {
-                    String accountName =
-                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                    if (accountName != null) {
-                        SharedPreferences settings =
-                                getPreferences(Context.MODE_PRIVATE);
+                if (resultCode == RESULT_OK && data != null && data.getExtras() != null)
+                {
+                    String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null)
+                    {
+                        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString(PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
                         accountCredential.setSelectedAccountName(accountName);
-                        //getResultsFromApi();
+
+                        //TODO what to do?
                         initializeDataFromApi();
                     }
                 }
                 break;
             case REQUEST_AUTHORIZATION:
-                if (resultCode == RESULT_OK) {
-                    //getResultsFromApi();
+                if (resultCode == RESULT_OK)
+                {
+                    //TODO what to do?
                     initializeDataFromApi();
                 }
                 break;
@@ -1468,12 +1271,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(
-                requestCode, permissions, grantResults, this);
+        EasyPermissions.onRequestPermissionsResult( requestCode, permissions, grantResults, this);
     }
 
     /**
@@ -1484,7 +1285,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param list The requested permission list. Never null.
      */
     //@Override
-    public void onPermissionsGranted(int requestCode, List<String> list) {
+    public void onPermissionsGranted(int requestCode, List<String> list)
+    {
         // Do nothing.
     }
 
@@ -1496,7 +1298,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param list The requested permission list. Never null.
      */
     //@Override
-    public void onPermissionsDenied(int requestCode, List<String> list) {
+    public void onPermissionsDenied(int requestCode, List<String> list)
+    {
         // Do nothing.
     }
 }
