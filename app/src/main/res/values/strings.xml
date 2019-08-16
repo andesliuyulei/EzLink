@@ -2,6 +2,7 @@
     <string name="app_name">EZLink</string>
     <string name="ezlink1">1234567890</string>
     <string name="button_submit">Submit Transaction</string>
+    <string name="button_swap">Swap</string>
     <string name="hint_bus_stop_2">Bus Stop (To)</string>
     <string name="hint_bus_stop_1">Bus Stop (From)</string>
     <string name="hint_bus_number">Bus Number</string>
