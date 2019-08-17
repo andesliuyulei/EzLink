@@ -163,6 +163,7 @@
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:enabled="true"
+                android:onClick="mrtSwap"
                 android:text="@string/button_swap"
                 app:layout_constraintLeft_toRightOf="@id/mrtStations"
                 app:layout_constraintRight_toRightOf="parent" />

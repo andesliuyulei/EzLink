@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CheckBox prePeakCheckBox;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo, editRemark, busFrom, busTo;
     private EditText busNumber, fareSgd, editDate;
-    private Button submit;
+    private Button submit, mrtswap;
     private static String transportationType = "MRT";
 
     private static int initJobCount = 0;
@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         prePeakCheckBox = findViewById(R.id.checkBoxPrePeak);
         mrtFrom = findViewById(R.id.editMRT1);
         mrtTo = findViewById(R.id.editMRT2);
+        mrtswap = findViewById(R.id.buttonSwap);
         busNumber = findViewById(R.id.editBusNumber);
         busFrom = findViewById(R.id.editBusStop1);
         busTo = findViewById(R.id.editBusStop2);
@@ -169,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 {
                     mrtFrom.setVisibility(View.VISIBLE);
                     mrtTo.setVisibility(View.VISIBLE);
+                    mrtswap.setVisibility(View.VISIBLE);
                     busNumber.setVisibility(View.GONE);
                     busFrom.setVisibility(View.GONE);
                     busTo.setVisibility(View.GONE);
@@ -181,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 {
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
+                    mrtswap.setVisibility(View.GONE);
                     busNumber.setVisibility(View.VISIBLE);
                     busFrom.setVisibility(View.VISIBLE);
                     busTo.setVisibility(View.VISIBLE);
@@ -193,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 {
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
+                    mrtswap.setVisibility(View.GONE);
                     busNumber.setVisibility(View.GONE);
                     busFrom.setVisibility(View.GONE);
                     busTo.setVisibility(View.GONE);
@@ -207,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 {
                     mrtFrom.setVisibility(View.GONE);
                     mrtTo.setVisibility(View.GONE);
+                    mrtswap.setVisibility(View.GONE);
                     busNumber.setVisibility(View.GONE);
                     busFrom.setVisibility(View.GONE);
                     busTo.setVisibility(View.GONE);
@@ -390,6 +395,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 editRemark.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, remarkList));
             }
         });
+    }
+
+    public void mrtSwap(View view)
+    {
+        String mrt1 = mrtFrom.getText().toString();
+        String mrt2 = mrtTo.getText().toString();
+        mrtFrom.setText(mrt2);
+        mrtTo.setText(mrt1);
     }
 
     @Override
