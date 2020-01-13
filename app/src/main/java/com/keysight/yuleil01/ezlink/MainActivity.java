@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private RadioGroup radioGroup1;
     private RadioButton mrtRadio, busRadio, retailRadio, topupRadio;
-    private CheckBox prePeakCheckBox;
+    private CheckBox prePeakCheckBox, continueCheckBox;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo, editRemark, busFrom, busTo;
     private EditText busNumber, fareSgd, editDate;
     private Button submit, mrtswap;
@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         submit = findViewById(R.id.buttonSubmit);
         editDate = findViewById(R.id.editDate);
         mrtGroup = findViewById(R.id.mrtGroup);
+        continueCheckBox = findViewById(R.id.checkBoxContinue);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
@@ -182,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     prePeakCheckBox.setVisibility(View.VISIBLE);
                     transportationType = "MRT";
                     mrtGroup.setVisibility(View.VISIBLE);
+                    continueCheckBox.setVisibility(View.VISIBLE);
                 }
                 else if (busRadio.isChecked() == true)
                 {
@@ -196,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "BUS";
                     mrtGroup.setVisibility(View.GONE);
+                    continueCheckBox.setVisibility(View.VISIBLE);
                 }
                 else if (retailRadio.isChecked() == true)
                 {
@@ -212,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "RETAIL";
                     mrtGroup.setVisibility(View.GONE);
+                    continueCheckBox.setVisibility(View.GONE);
                 }
                 else if (topupRadio.isChecked() == true)
                 {
@@ -228,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "TOP UP";
                     mrtGroup.setVisibility(View.GONE);
+                    continueCheckBox.setVisibility(View.GONE);
                 }
                 else
                 {
@@ -661,6 +666,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (mrtRadio.isChecked())
         {
             boolean prepeak = false;
+            boolean resume = false;
             if (mrtFrom.getText().toString().equals(""))
             {
                 alert("Please enter 'MRT Station (From)'.");
@@ -675,6 +681,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (prePeakCheckBox.isChecked())
             {
                 prepeak = true;
+            }
+            if (continueCheckBox.isChecked())
+            {
+                resume = true;
             }
 
             functionParameters.add(editDate.getText().toString());
@@ -719,12 +729,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             functionParameters.add(prepeak);
+            functionParameters.add(resume);
         }
         else if (busRadio.isChecked())
         {
             String bus0 = busNumber.getText().toString();
             String bus1 = busFrom.getText().toString();
             String bus2 = busTo.getText().toString();
+            boolean resume = false;
             if (bus0.equals(""))
             {
                 alert("Please enter 'Bus Number'.");
@@ -739,6 +751,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 alert("Please enter 'Bus Stop (To)'.");
                 return;
+            }
+            if (continueCheckBox.isChecked())
+            {
+                resume = true;
             }
 
             functionParameters.add(editDate.getText().toString());
@@ -779,6 +795,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mBusStopViewModel.insert(new BusStop(bus2));
                 }
             }
+            functionParameters.add(resume);
         }
         else if (retailRadio.isChecked())
         {
