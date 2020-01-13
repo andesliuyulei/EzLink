@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import com.google.android.gms.auth.GoogleAuthException;
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private EditText busNumber, fareSgd, editDate;
     private Button submit, mrtswap;
     private static String transportationType = "MRT";
+    private LinearLayout mrtGroup;
 
     private static int initJobCount = 0;
     private static int initJobTotal = 0;
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editRemark = findViewById(R.id.remark);
         submit = findViewById(R.id.buttonSubmit);
         editDate = findViewById(R.id.editDate);
+        mrtGroup = findViewById(R.id.mrtGroup);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
@@ -178,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.GONE);
                     prePeakCheckBox.setVisibility(View.VISIBLE);
                     transportationType = "MRT";
+                    mrtGroup.setVisibility(View.VISIBLE);
                 }
                 else if (busRadio.isChecked() == true)
                 {
@@ -191,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.GONE);
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "BUS";
+                    mrtGroup.setVisibility(View.GONE);
                 }
                 else if (retailRadio.isChecked() == true)
                 {
@@ -206,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.VISIBLE);
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "RETAIL";
+                    mrtGroup.setVisibility(View.GONE);
                 }
                 else if (topupRadio.isChecked() == true)
                 {
@@ -221,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.VISIBLE);
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "TOP UP";
+                    mrtGroup.setVisibility(View.GONE);
                 }
                 else
                 {
