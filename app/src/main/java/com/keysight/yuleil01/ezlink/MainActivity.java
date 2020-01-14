@@ -452,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ezlinkCardNumber.setText(cardof_lxt);
                 getResultsFromApi();
                 break;
-            case R.id.sbw_yis:
+            case R.id.lyl_to_work:
                 ezlinkCardNumber.setText(cardof_lyl);
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Sembawang");
@@ -460,12 +460,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 checkIfIsPrePeak();
                 getResultsFromApi();
                 break;
-            case R.id.yis_sbw:
+            case R.id.lyl_back_home:
                 ezlinkCardNumber.setText(cardof_lyl);
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Yishun");
                 mrtTo.setText("Sembawang");
                 checkIfIsPrePeak();
+                getResultsFromApi();
+                break;
+            case R.id.lc_to_work:
+                ezlinkCardNumber.setText(cardof_lc);
+                mrtRadio.setChecked(Boolean.TRUE);
+                mrtFrom.setText("Sembawang");
+                mrtTo.setText("Admiralty");
+                getResultsFromApi();
+                break;
+            case R.id.lc_to_work_2:
+                ezlinkCardNumber.setText(cardof_lc);
+                mrtRadio.setChecked(Boolean.TRUE);
+                mrtFrom.setText("Sembawang");
+                mrtTo.setText("Admiralty");
+                prePeakCheckBox.setChecked(Boolean.TRUE);
+                getResultsFromApi();
+                break;
+            case R.id.lc_back_home:
+                ezlinkCardNumber.setText(cardof_lc);
+                mrtRadio.setChecked(Boolean.TRUE);
+                mrtFrom.setText("Admiralty");
+                mrtTo.setText("Sembawang");
                 getResultsFromApi();
                 break;
             case R.id.rst_form:
@@ -492,9 +514,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.init_data:
                 initializeDataFromApi();
                 break;
-            case R.id.recycler_view:
+            /*case R.id.recycler_view:
                 displayRecyclerView();
-                break;
+                break;*/
             default:
                 //do nothing here!
                 break;
