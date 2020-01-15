@@ -473,6 +473,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Sembawang");
                 mrtTo.setText("Admiralty");
+                prePeakCheckBox.setChecked(Boolean.FALSE);
                 getResultsFromApi();
                 break;
             case R.id.lc_to_work_2:
@@ -488,6 +489,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Admiralty");
                 mrtTo.setText("Sembawang");
+                prePeakCheckBox.setChecked(Boolean.FALSE);
                 getResultsFromApi();
                 break;
             case R.id.rst_form:
