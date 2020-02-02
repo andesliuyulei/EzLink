@@ -689,6 +689,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         functionParameters.add(transactionCardNumber);
         if (mrtRadio.isChecked())
         {
+            transportationType = "MRT";
             boolean prepeak = false;
             boolean resume = false;
             if (mrtFrom.getText().toString().equals(""))
@@ -757,6 +758,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (busRadio.isChecked())
         {
+            transportationType = "BUS";
             String bus0 = busNumber.getText().toString();
             String bus1 = busFrom.getText().toString();
             String bus2 = busTo.getText().toString();
@@ -823,6 +825,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (retailRadio.isChecked())
         {
+            transportationType = "RETAIL";
             String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_Retail";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
@@ -838,6 +841,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (topupRadio.isChecked())
         {
+            transportationType = "TOP UP";
             String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_ManualTopUp";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
