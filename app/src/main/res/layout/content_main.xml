@@ -111,9 +111,19 @@
                 android:text="Pre-Peak"
                 app:layout_constraintLeft_toRightOf="@+id/editDate"
                 app:layout_constraintRight_toRightOf="parent"/>
+
+            <CheckBox
+                android:id="@+id/checkBoxContinue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Continue"
+                app:layout_constraintLeft_toRightOf="@+id/editDate"
+                app:layout_constraintRight_toRightOf="parent" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/mrtGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -185,7 +195,7 @@
                 android:inputType="number"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/selectMRTorBUS" />
+                app:layout_constraintTop_toBottomOf="@+id/editDate" />
 
             <AutoCompleteTextView
                 android:id="@+id/editBusStop1"
@@ -234,7 +244,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editBusStop1" />
+                app:layout_constraintTop_toBottomOf="@+id/editBusStop2" />
 
             <AutoCompleteTextView
                 android:id="@+id/remark"

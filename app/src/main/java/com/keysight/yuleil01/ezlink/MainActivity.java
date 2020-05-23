@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import com.google.android.gms.auth.GoogleAuthException;
@@ -98,11 +99,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private RadioGroup radioGroup1;
     private RadioButton mrtRadio, busRadio, retailRadio, topupRadio;
-    private CheckBox prePeakCheckBox;
+    private CheckBox prePeakCheckBox, continueCheckBox;
     private AutoCompleteTextView ezlinkCardNumber, mrtFrom, mrtTo, editRemark, busFrom, busTo;
     private EditText busNumber, fareSgd, editDate;
     private Button submit, mrtswap;
     private static String transportationType = "MRT";
+    private LinearLayout mrtGroup;
 
     private static int initJobCount = 0;
     private static int initJobTotal = 0;
@@ -155,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editRemark = findViewById(R.id.remark);
         submit = findViewById(R.id.buttonSubmit);
         editDate = findViewById(R.id.editDate);
+        mrtGroup = findViewById(R.id.mrtGroup);
+        continueCheckBox = findViewById(R.id.checkBoxContinue);
 
         busNumber.setVisibility(View.GONE);
         busFrom.setVisibility(View.GONE);
@@ -178,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.GONE);
                     prePeakCheckBox.setVisibility(View.VISIBLE);
                     transportationType = "MRT";
+                    mrtGroup.setVisibility(View.VISIBLE);
+                    continueCheckBox.setVisibility(View.VISIBLE);
                 }
                 else if (busRadio.isChecked() == true)
                 {
@@ -191,6 +197,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.GONE);
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "BUS";
+                    mrtGroup.setVisibility(View.GONE);
+                    continueCheckBox.setVisibility(View.VISIBLE);
                 }
                 else if (retailRadio.isChecked() == true)
                 {
@@ -206,6 +214,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.VISIBLE);
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "RETAIL";
+                    mrtGroup.setVisibility(View.GONE);
+                    continueCheckBox.setVisibility(View.GONE);
                 }
                 else if (topupRadio.isChecked() == true)
                 {
@@ -221,6 +231,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     editRemark.setVisibility(View.VISIBLE);
                     prePeakCheckBox.setVisibility(View.GONE);
                     transportationType = "TOP UP";
+                    mrtGroup.setVisibility(View.GONE);
+                    continueCheckBox.setVisibility(View.GONE);
                 }
                 else
                 {
@@ -440,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ezlinkCardNumber.setText(cardof_lxt);
                 getResultsFromApi();
                 break;
-            case R.id.sbw_yis:
+            case R.id.lyl_to_work:
                 ezlinkCardNumber.setText(cardof_lyl);
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Sembawang");
@@ -448,12 +460,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 checkIfIsPrePeak();
                 getResultsFromApi();
                 break;
-            case R.id.yis_sbw:
+            case R.id.lyl_back_home:
                 ezlinkCardNumber.setText(cardof_lyl);
                 mrtRadio.setChecked(Boolean.TRUE);
                 mrtFrom.setText("Yishun");
                 mrtTo.setText("Sembawang");
                 checkIfIsPrePeak();
+                getResultsFromApi();
+                break;
+            case R.id.lc_to_work:
+                ezlinkCardNumber.setText(cardof_lc);
+                mrtRadio.setChecked(Boolean.TRUE);
+                mrtFrom.setText("Sembawang");
+                mrtTo.setText("Admiralty");
+                prePeakCheckBox.setChecked(Boolean.FALSE);
+                getResultsFromApi();
+                break;
+            case R.id.lc_to_work_2:
+                ezlinkCardNumber.setText(cardof_lc);
+                mrtRadio.setChecked(Boolean.TRUE);
+                mrtFrom.setText("Sembawang");
+                mrtTo.setText("Admiralty");
+                prePeakCheckBox.setChecked(Boolean.TRUE);
+                getResultsFromApi();
+                break;
+            case R.id.lc_back_home:
+                ezlinkCardNumber.setText(cardof_lc);
+                mrtRadio.setChecked(Boolean.TRUE);
+                mrtFrom.setText("Admiralty");
+                mrtTo.setText("Sembawang");
+                prePeakCheckBox.setChecked(Boolean.FALSE);
                 getResultsFromApi();
                 break;
             case R.id.rst_form:
@@ -480,9 +516,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.init_data:
                 initializeDataFromApi();
                 break;
-            case R.id.recycler_view:
+            /*case R.id.recycler_view:
                 displayRecyclerView();
-                break;
+                break;*/
             default:
                 //do nothing here!
                 break;
@@ -653,7 +689,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         functionParameters.add(transactionCardNumber);
         if (mrtRadio.isChecked())
         {
+            transportationType = "MRT";
             boolean prepeak = false;
+            boolean resume = false;
             if (mrtFrom.getText().toString().equals(""))
             {
                 alert("Please enter 'MRT Station (From)'.");
@@ -668,6 +706,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (prePeakCheckBox.isChecked())
             {
                 prepeak = true;
+            }
+            if (continueCheckBox.isChecked())
+            {
+                resume = true;
             }
 
             functionParameters.add(editDate.getText().toString());
@@ -712,12 +754,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
             functionParameters.add(prepeak);
+            functionParameters.add(resume);
         }
         else if (busRadio.isChecked())
         {
+            transportationType = "BUS";
             String bus0 = busNumber.getText().toString();
             String bus1 = busFrom.getText().toString();
             String bus2 = busTo.getText().toString();
+            boolean resume = false;
             if (bus0.equals(""))
             {
                 alert("Please enter 'Bus Number'.");
@@ -732,6 +777,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 alert("Please enter 'Bus Stop (To)'.");
                 return;
+            }
+            if (continueCheckBox.isChecked())
+            {
+                resume = true;
             }
 
             functionParameters.add(editDate.getText().toString());
@@ -772,9 +821,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mBusStopViewModel.insert(new BusStop(bus2));
                 }
             }
+            functionParameters.add(resume);
         }
         else if (retailRadio.isChecked())
         {
+            transportationType = "RETAIL";
             String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_Retail";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
@@ -790,6 +841,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (topupRadio.isChecked())
         {
+            transportationType = "TOP UP";
             String remark = editRemark.getText().toString();
             functionName = "ezlinkTransaction_ManualTopUp";
             functionParameters.add(Float.parseFloat(fareSgd.getText().toString()));
