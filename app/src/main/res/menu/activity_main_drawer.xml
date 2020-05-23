@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/integrity_check"
+            android:title="Integrity Check" />
+        <item
+            android:id="@+id/init_data"
+            android:title="Re-Initialize Data" />
+        <item
+            android:id="@+id/rst_form"
+            android:title="Reset Form" />
+        <!--item
+            android:id="@+id/recycler_view"
+            android:title="Display Recycler View" /-->
+    </group>
+
+    <item android:title="Reserved Area">
+        <menu>
+            <item
+                android:id="@+id/lyl_to_work"
+                android:title="LIU YULEI: go to work" />
+            <item
+                android:id="@+id/lyl_back_home"
+                android:title="LIU YULEI: come back home" />
+            <item
+                android:id="@+id/lc_to_work"
+                android:title="LI CHANG: go to work" />
+            <item
+                android:id="@+id/lc_to_work_2"
+                android:title="LI CHANG: go to work early" />
+            <item
+                android:id="@+id/lc_back_home"
+                android:title="LI CHANG: come back home" />
+            <item
+                android:id="@+id/samefor_lc"
+                android:title="LI CHANG: same ride" />
+            <item
+                android:id="@+id/samefor_lxt"
+                android:title="LIU XINTONG: same ride" />
+        </menu>
+    </item>
+
+</menu>

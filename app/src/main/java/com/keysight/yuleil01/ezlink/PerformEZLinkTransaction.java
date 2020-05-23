@@ -46,7 +46,8 @@ public class PerformEZLinkTransaction extends AppCompatActivity {
     private View mrtStationFrom, mrtStationTo, busNumber, busStopFrom, busStopTo;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perform_ezlink_transaction);
 
@@ -63,21 +64,56 @@ public class PerformEZLinkTransaction extends AppCompatActivity {
         ((TextView) findViewById(R.id.selectedCardNumber)).setText("EZLink Card Number: " + intent.getStringExtra(MainActivity.EZLINK_CARD_NUMBER));
         String transportationType = intent.getStringExtra(MainActivity.TRANSPORTATION_TYPE);
         ((TextView) findViewById(R.id.selectedTransportationType)).setText("Transportation Type: " + transportationType);
-        if (transportationType.equals("MRT")) {
+        if (transportationType.equals("MRT"))
+        {
             busNumber.setVisibility(View.GONE);
             busStopFrom.setVisibility(View.GONE);
             busStopTo.setVisibility(View.GONE);
             ((TextView) mrtStationFrom).setText("SMRT Station (From): " + intent.getStringExtra(MainActivity.MRT_STATION_FROM));
             ((TextView) mrtStationTo).setText("SMRT Station (To): " + intent.getStringExtra(MainActivity.MRT_STATION_TO));
-        } else {
+            ((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
+        }
+        else if (transportationType.equals("BUS"))
+        {
             mrtStationFrom.setVisibility(View.GONE);
             mrtStationTo.setVisibility(View.GONE);
             ((TextView) busNumber).setText("Bus Number: " + intent.getStringExtra(MainActivity.BUS_NUMBER));
             ((TextView) busStopFrom).setText("Bus Stop (From): " + intent.getStringExtra(MainActivity.BUS_STOP_FROM));
             ((TextView) busStopTo).setText("Bus Stop (To): " + intent.getStringExtra(MainActivity.BUS_STOP_TO));
+            ((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
         }
-        ((TextView) findViewById(R.id.distanceTraveled)).setText("Distance (km): " + intent.getStringExtra(MainActivity.EZLINK_RESULT1));
-        ((TextView) findViewById(R.id.fareIncurred)).setText("Fare (SGD): " + intent.getStringExtra(MainActivity.EZLINK_RESULT2));
+        else if (transportationType.equals("RETAIL"))
+        {
+            mrtStationFrom.setVisibility(View.GONE);
+            mrtStationTo.setVisibility(View.GONE);
+            busNumber.setVisibility(View.GONE);
+            busStopFrom.setVisibility(View.GONE);
+            busStopTo.setVisibility(View.GONE);
+            findViewById(R.id.distanceTraveled).setVisibility(View.GONE);
+        }
+        else if (transportationType.equals("TOP UP"))
+        {
+            mrtStationFrom.setVisibility(View.GONE);
+            mrtStationTo.setVisibility(View.GONE);
+            busNumber.setVisibility(View.GONE);
+            busStopFrom.setVisibility(View.GONE);
+            busStopTo.setVisibility(View.GONE);
+            findViewById(R.id.distanceTraveled).setVisibility(View.GONE);
+        }
+        else
+        {
+            //Do nothing here.
+        }
+
+        String prepeak = intent.getStringExtra(MainActivity.Pre_Peak);
+        if (prepeak.equals("Pre-Peak"))
+        {
+            ((TextView) findViewById(R.id.fareIncurred)).setText("Fare (SGD): " + intent.getStringExtra(MainActivity.EZLINK_RESULT2) + " (Pre-Peak)");
+        }
+        else
+        {
+            ((TextView) findViewById(R.id.fareIncurred)).setText("Fare (SGD): " + intent.getStringExtra(MainActivity.EZLINK_RESULT2));
+        }
         ((TextView) findViewById(R.id.balanceBefore)).setText("Balance before (SGD): " + intent.getStringExtra(MainActivity.EZLINK_RESULT3));
         ((TextView) findViewById(R.id.balanceAfter)).setText("Balance after (SGD): " + intent.getStringExtra(MainActivity.EZLINK_RESULT4));
     }
